@@ -36,7 +36,7 @@ export default function Home() {
 
   return (
     <main>
-      <Navbar />
+      {/* <Navbar /> */}
       <section id="hero section" className="flex items-center justify-center bg-slate-200 border rounded-3xl relative">
         <div className="flex gap-y-10 flex-col py-14 ">
           <h1 className="text-[64px] font-semibold text-center">Jobs for UnSkilled Youth
@@ -81,6 +81,9 @@ export default function Home() {
             </form>
           </Form>
         </div>
+      </section>
+      <section id="job-display">
+
       </section>
     </main>
   );
