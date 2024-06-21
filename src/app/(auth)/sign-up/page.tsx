@@ -50,7 +50,7 @@ function SignUp() {
   };
   return (
     <main className="flex justify-center  bg-gray-200m ">
-      <Tabs defaultValue="worker" className="w-f py-10 ">
+      <Tabs defaultValue="worker" className="w-f py-5 ">
         <TabsList className="grid w-full grid-cols-2 bg-whitex shadow-none">
           <TabsTrigger value="worker" className="data-[state=active]:border">
             Worker
