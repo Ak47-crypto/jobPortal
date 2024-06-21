@@ -20,7 +20,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { connectWallet } from "@/helpers/connectWallet";
-import { X, LogIn } from "lucide-react";
+import { X, LogIn,Shield } from "lucide-react";
 import { ethers } from "ethers";
 import { Loader2 } from "lucide-react";
 import DropDownMenu from "@/components/DropDownMenu";
@@ -79,7 +79,7 @@ function Navbar() {
             <Link href={"/"}>jobPortal</Link>
           </h1>
         </div>
-        {!pathname.startsWith("/sign-up") && (
+        {!(pathname.startsWith("/sign-up")||pathname.startsWith("/admin-login")) && (
           <>
             <ul className="flex gap-x-6 items-center justify-center w-full  px-5 py-5">
               {navLinks.map((obj, index) => (
@@ -158,16 +158,29 @@ function Navbar() {
                       <Separator className="mt-5 bg-gray-300 w-1/2 m-auto" />
                     </div>
                     <button
-                      className={`flex justify-start items-center gap-x-5  shadow-md rounded-lg w-[75%] m-auto  bg-gray-100 hover:bg-gray-200  mt-7`}
+                      className={`flex justify-start items-center gap-x-5  shadow-md rounded-t-lg w-[75%] m-auto  bg-gray-100 hover:bg-gray-200  mt-7`}
                       disabled={isConnecting}
                       onClick={() => {
                         router.replace("sign-up");
                         setAlertOpen(false);
                       }}
                     >
-                      <LogIn className="ml-2" />
+                      <LogIn className="ml-2 text-black" />
                       <p className="py-3 text-[16px] font-semibold text-black">
                         Sign up
+                      </p>
+                    </button>
+                    <button
+                      className={`flex justify-start items-center gap-x-5  shadow-md rounded-b-lg w-[75%] m-auto  bg-gray-100 hover:bg-gray-200  mt-[1px]`}
+                      disabled={isConnecting}
+                      onClick={() => {
+                        router.replace("admin-login");
+                        setAlertOpen(false);
+                      }}
+                    >
+                      <Shield className="ml-2 text-black" />
+                      <p className="py-3 text-[16px] font-semibold text-black">
+                        Admin login
                       </p>
                     </button>
                   </AlertDialogDescription>

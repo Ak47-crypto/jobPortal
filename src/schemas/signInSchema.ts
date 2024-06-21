@@ -24,3 +24,9 @@ export const signUpProviderSchema = z.object({
       .regex(walletAddressRegex,'Invalid Ethereum wallet address'),
   });
 
+  export const signInAdminSchema = z.object({
+    identifier: z.string().email("Invalid email"),
+    password:z.string().min(6,{message:"Must be 6 characters long"})
+  });
+
+
