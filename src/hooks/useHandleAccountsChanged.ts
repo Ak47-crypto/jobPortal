@@ -1,10 +1,14 @@
 import { useAppContext } from "@/context/SiteContext";
 import { useToast } from "@/components/ui/use-toast"
-
+import { useSession } from "next-auth/react";
 export function useHandleAccountsChanged() {
   const { toast } = useToast()
   const { setAccounts } = useAppContext();
+  const {data:session} = useSession();
   const handleAccountChanged = (data: any) => {
+    if (!session || !session.user) {
+      
+    }
     setAccounts(data);
     if (data.length > 0) {
       localStorage.setItem('account', data[0])

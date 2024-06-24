@@ -5,9 +5,10 @@ import {
   signUpProviderSchema,
 } from "@/schemas/signInSchema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import React from "react";
+import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useToast } from "@/components/ui/use-toast";
 import {
   Form,
   FormControl,
@@ -19,7 +20,10 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Loader2 } from "lucide-react";
 function SignUp() {
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const form = useForm<z.infer<typeof signUpWorkerSchema>>({
     resolver: zodResolver(signUpWorkerSchema),
     defaultValues: {
@@ -42,11 +46,82 @@ function SignUp() {
     data: z.infer<typeof signUpWorkerSchema>
   ) => {
     console.log(data);
+    try {
+      setIsSubmitting(true);
+      const response = await fetch("/api/sign-up/worker", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      const data2 = await response.json();
+      if (data2.success == true)
+        toast({
+          title: "Message",
+          description: data2.message,
+        });
+      else {
+        toast({
+          title: "Message",
+          description: data2.message,
+          variant: "destructive",
+        });
+        form.setValue("email", "");
+        form.setValue("walletAddress", "");
+      }
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: "Message",
+        description: "Server error",
+        variant: "destructive",
+      });
+      form.setValue("email", "");
+      form.setValue("walletAddress", "");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   const handleSubmitProvider = async (
     data: z.infer<typeof signUpProviderSchema>
   ) => {
-    console.log(data);
+    try {
+      setIsSubmitting(true);
+      const response = await fetch("/api/sign-up/provider", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      const data2 = await response.json();
+      if (data2.success == true)
+        toast({
+          title: "Message",
+          description: data2.message,
+        });
+      else {
+        toast({
+          title: "Message",
+          description: data2.message,
+          variant: "destructive",
+        });
+        form2.setValue("email", "");
+        form2.setValue("walletAddress", "");
+      }
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: "Message",
+        description: "Server error",
+        variant: "destructive",
+      });
+      form2.setValue("email", "");
+      form2.setValue("walletAddress", "");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   return (
     <main className="flex justify-center  bg-gray-200m ">
@@ -178,8 +253,15 @@ function SignUp() {
                 )}
               />
 
-              <Button type="submit" variant={"default"} className="col-span-2">
-                Sign up
+              <Button type="submit" variant={"default"} disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Please wait
+                  </>
+                ) : (
+                  "Sign Up"
+                )}
               </Button>
             </form>
           </Form>
@@ -264,8 +346,15 @@ function SignUp() {
                 )}
               />
 
-              <Button type="submit" variant={"default"} className="w-full">
-                Sign up
+              <Button type="submit" variant={"default"} disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Please wait
+                  </>
+                ) : (
+                  "Sign Up"
+                )}
               </Button>
             </form>
           </Form>
