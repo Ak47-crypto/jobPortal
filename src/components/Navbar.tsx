@@ -20,9 +20,9 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { connectWallet } from "@/helpers/connectWallet";
-import { X, LogIn,Shield } from "lucide-react";
+import { X, LogIn, Shield } from "lucide-react";
 import { ethers } from "ethers";
-import { Loader2 } from "lucide-react";
+import { Loader2, UserRound } from "lucide-react";
 import DropDownMenu from "@/components/DropDownMenu";
 import { Separator } from "@/components/ui/separator";
 
@@ -63,10 +63,24 @@ function Navbar() {
   const handleActiveState = (index: number) => {
     setIsActive(index);
   };
-
+  const handleNavbarUserLogOut = async () => {
+    localStorage.removeItem("account");
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    await provider.send("wallet_revokePermissions", [
+      {
+        eth_accounts: {},
+      },
+    ]);
+    window.location.reload();
+  };
+  if (pathname.startsWith("/dashboard")) return null;
   return (
     <nav>
-      <div className={`flex justify-between px-[155px]   ${pathname.startsWith('/sign-up')?'shadowm':''}`}>
+      <div
+        className={`flex justify-between px-[155px]   ${
+          pathname.startsWith("/sign-up") ? "shadowm" : ""
+        }`}
+      >
         <div id="logo" className="py-5 px-5 flex items-center ">
           <Image
             src={"logo.svg"}
@@ -79,7 +93,9 @@ function Navbar() {
             <Link href={"/"}>jobPortal</Link>
           </h1>
         </div>
-        {!(pathname.startsWith("/sign-up")||pathname.startsWith("/admin-login")) && (
+        {!(
+          pathname.startsWith("/sign-up") || pathname.startsWith("/admin-login")
+        ) && (
           <>
             <ul className="flex gap-x-6 items-center justify-center w-full  px-5 py-5">
               {navLinks.map((obj, index) => (
@@ -95,7 +111,13 @@ function Navbar() {
               ))}
             </ul>
 
-            {localStorage.getItem("account") && <DropDownMenu />}
+            {localStorage.getItem("account") && (
+              <DropDownMenu
+                navbar={true}
+                navbarLogout={handleNavbarUserLogOut}
+                trigger={<UserRound/>}
+              />
+            )}
 
             <AlertDialog
               open={alertOpen}

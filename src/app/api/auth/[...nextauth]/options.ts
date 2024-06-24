@@ -30,6 +30,7 @@ export const auth0options: NextAuthOptions = {
           if (!isPasswordCorrect) {
             throw new Error("Incorrect Credentials");
           }
+          
           return admin;
         } catch (err: any) {
           throw new Error(err);
@@ -39,11 +40,17 @@ export const auth0options: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user }) {
-      
+      if(user){
+        // console.log(user.walletAddress,'in token')
+      token.walletAddress=user.walletAddress
+      }
       return token;
     },
     async session({ session, token }) {
-      console.log(session + "in session")
+      if(token){
+        // console.log(token.walletAddress)
+        session.user.walletAddress=token.walletAddress
+      }
       return session;
     },
   },
