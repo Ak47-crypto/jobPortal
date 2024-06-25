@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import React, { useEffect, useState, useRef } from "react";
-import { ApproveRequest } from "@/hooks/admin/useApproveRequest";
+import { useApproveRequest } from "@/hooks/admin/useApproveRequest";
 import {
   BarChart2,
   CircleDashed,
@@ -47,18 +47,18 @@ import { ethers } from "ethers";
 import { useAppContext } from "@/context/SiteContext";
 import { useToast } from "@/components/ui/use-toast";
 interface User {
-  id: string;
+  id?: string;
   name: string;
   email: string;
   walletAddress: string;
   role: string;
   createdAt: Date;
 }
-interface Alluser{
-  users:Array<User>;
-  workerCount:number;
-  providerCount:number;
-  adminCount:number;
+interface Alluser {
+  users: Array<User>;
+  workerCount: number;
+  providerCount: number;
+  adminCount: number;
 }
 const initialUserData: Alluser = {
   users: [],
@@ -66,6 +66,13 @@ const initialUserData: Alluser = {
   providerCount: 0,
   adminCount: 0,
 };
+interface Obj {
+  name: string;
+  email: string;
+  role: string;
+  walletAddress: string;
+  createdAt: Date;
+}
 function Dashboard() {
   const alertRef = useRef<HTMLButtonElement>(null);
   const [index, setIndex] = useState<number>(0);
@@ -79,13 +86,13 @@ function Dashboard() {
   const [chevron, setChevron] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
-
-  ApproveRequest().then((result)=>console.log(result))
+  const { isTransacting,requestIndex,approveRequest,setIsTransacting } = useApproveRequest();
+  // const [requestIndex,setRequestIndex]=useState<any>();
   const handleActiveState = (index: number) => {
     setIsActive(index);
     localStorage.setItem("isActive", isActive?.toString());
   };
-  const deletePendingRequests = async () => {
+  const handleDeletePendingRequests = async () => {
     try {
       setIsDeleting(true);
       const response = await fetch("/api/delete-user-request", {
@@ -108,10 +115,13 @@ function Dashboard() {
         setRequestData((prevRequestData) => {
           return prevRequestData.filter((_, i) => i !== index);
         });
-        setUserData((prevRequestData) => {
-          const updatedUser=prevRequestData?.users.filter((_, i) => i !== index)
-          return {...prevRequestData,users:updatedUser}
-        });
+        // TODO:remove it later
+        // setUserData((prevRequestData) => {
+        //   const updatedUser = prevRequestData?.users.filter(
+        //     (_, i) => i !== index
+        //   );
+        //   return { ...prevRequestData, users: updatedUser };
+        // });
         // location.reload()
       }
     } catch (error: any) {
@@ -123,6 +133,51 @@ function Dashboard() {
       setIsDeleting(false);
     }
   };
+
+  const handleApproveRequest = async (index: number, obj: Obj) => {
+    const response = await approveRequest(obj,index);
+    try {
+      if(!response){
+        return ;
+      }else {
+        
+        const response2 = await fetch('/api/update-pending-request',{
+          method:'POST',
+          headers:{
+            'content-type':'application/json'
+          },
+          body:JSON.stringify({
+            email:obj.email,
+            role:obj.role
+          })
+        })
+        const data = await response2.json();
+        if(data.success){
+        setRequestData((prevRequestData) => {
+          return prevRequestData.filter((_, i) => i !== index);
+        });
+        userData.users.push(obj)
+      }
+        if(!data.success){
+          toast({
+            title:'Message',
+            description:'Backend user record not updated, please update it manually',
+            variant:'destructive'
+          })
+        }
+      }
+    } catch (error) {
+      toast({
+        title:'Message',
+        description:'Error occured',
+        variant:'destructive'
+      })
+    }finally{
+      setIsTransacting(false)
+    }
+      
+  };
+
   const handleAdminConnectWallet = async () => {
     await handleConnectWallet();
     if (localStorage.getItem("account")) {
@@ -162,9 +217,8 @@ function Dashboard() {
       .then((response) => response.json())
       .then((data) => {
         if (data.success == true) {
-          console.log(data.data.length);
           setRequestData(data.data);
-        } else console.log(data);
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -180,9 +234,8 @@ function Dashboard() {
       .then((response) => response.json())
       .then((data) => {
         if (data.success == true) {
-          console.log(data.data.length);
           setUserData(data.data);
-        } else console.log(data);
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -193,7 +246,6 @@ function Dashboard() {
   };
 
   const handleAdminLogOut = async () => {
-    signOut();
     localStorage.removeItem("account");
     const provider = new ethers.BrowserProvider(window.ethereum);
     await provider.send("wallet_revokePermissions", [
@@ -201,7 +253,7 @@ function Dashboard() {
         eth_accounts: {},
       },
     ]);
-
+    signOut();
     // window.location.reload();
   };
   if (!session || !session.user) {
@@ -236,12 +288,25 @@ function Dashboard() {
             >
               <CircleDashed />
               <li>Requests</li>
-              {requesData.length==0?<div className='flex items-center invisible'>
-                                <input type="text" placeholder={requesData.length.toString()} disabled className='rounded-[100%] w-[20px] h-[20px] bg-black placeholder:text-center placeholder:text-white  ' />
-                            </div>:
-              <div className='flex items-center'>
-                                <input type="text" placeholder={requesData.length.toString()} disabled className='rounded-[100%] w-[20px] h-[20px] bg-black placeholder:text-center placeholder:text-white  ' />
-                            </div>}
+              {requesData.length == 0 ? (
+                <div className="flex items-center invisible">
+                  <input
+                    type="text"
+                    placeholder={requesData.length.toString()}
+                    disabled
+                    className="rounded-[100%] w-[20px] h-[20px] bg-black placeholder:text-center placeholder:text-white  "
+                  />
+                </div>
+              ) : (
+                <div className="flex items-center">
+                  <input
+                    type="text"
+                    placeholder={requesData.length.toString()}
+                    disabled
+                    className="rounded-[100%] w-[20px] h-[20px] bg-black placeholder:text-center placeholder:text-white  "
+                  />
+                </div>
+              )}
             </div>
           </ul>
         </section>
@@ -465,17 +530,25 @@ function Dashboard() {
                                   ? "rounded-br-xl"
                                   : ""
                               }`}
+                              
                             >
                               <span className="flex justify-end gap-2">
-                                <Check className=" text-[#C5CEE0] scale-90 hover:cursor-pointer hover:text-gray-500 transition-colors ease-in-out" />
+                                {isTransacting&&index===requestIndex?<Loader2 className="animate-spin"/>:
+                                (<Check
+                                  className=" text-[#C5CEE0] scale-90 hover:cursor-pointer hover:text-gray-500 transition-colors ease-in-out"
+                                  
+                                  onClick={isTransacting?undefined:()=>handleApproveRequest(index,obj)}
+                                  
+                                />)}
                                 <Trash2
+                                
                                   className=" text-[#C5CEE0] scale-90 hover:cursor-pointer hover:text-gray-500 transition-colors ease-in-out"
                                   // onClick={()=>{ if (alertRef.current) {
                                   //   {alertRef.current.click();
                                   //     setIndex(index)
                                   //   }
                                   // }}}
-                                  onClick={() => setAlertOpen(true)}
+                                  onClick={isTransacting?undefined:() => setAlertOpen(true)}
                                 />
                               </span>
                             </TableCell>
@@ -497,7 +570,7 @@ function Dashboard() {
                       </AlertDescription>
                     </Alert> */}
                     <div className="border border-dashed border-black rounded-md p-5 ml-10 ">
-                    <Terminal className="h-4 w-4 inline" />
+                      <Terminal className="h-4 w-4 inline" />
                       <span>You are all catched up no pending request</span>
                     </div>
                   </div>
@@ -528,7 +601,7 @@ function Dashboard() {
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={deletePendingRequests}
+              onClick={handleDeletePendingRequests}
               disabled={isConnecting}
             >
               {isDeleting ? (

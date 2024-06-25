@@ -5,7 +5,7 @@ import { connectWallet } from "@/helpers/connectWallet";
 
 export function useWalletConnect() {
   const { toast } = useToast();
-  const { setAccounts, setLogin, login } = useAppContext();
+  const { setAccounts, setLogin, login,setProvider } = useAppContext();
   const [isConnecting, setIsConnecting] = useState(false);
 
   const handleConnectWallet = async () => {
@@ -16,6 +16,7 @@ export function useWalletConnect() {
       if (Array.isArray(data)) {
         setAccounts(data);
         setIsConnecting(false);
+        
         return 1;
         // setLogin(true);
       } else if ("shortMessage" in data) {

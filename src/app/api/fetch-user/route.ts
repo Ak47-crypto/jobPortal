@@ -53,7 +53,7 @@ export  async function POST(request:Request){
     await dbConnect();
     try {
         const workersPipeline = [
-          
+          { $match: { isVerified: true } },
           {
             $project: {
               name: 1,
@@ -66,7 +66,7 @@ export  async function POST(request:Request){
         ];
     
         const providersPipeline = [
-          
+          { $match: { isVerified: true } },
           {
             $project: {
               name: 1,
@@ -96,10 +96,14 @@ export  async function POST(request:Request){
         const admins=await adminModel.aggregate(adminPipeline)
 
         // fetch counts
-        const workersCountResult = await workerModel.aggregate([{
+        const workersCountResult = await workerModel.aggregate([
+          { $match: { isVerified: true } },
+          {
             $count: "workerCount"
           }]);
-    const providersCountResult = await providerModel.aggregate([{
+    const providersCountResult = await providerModel.aggregate([
+      { $match: { isVerified: true } },
+      {
         $count: "providerCount"
       }]);
     const adminCountResult = await adminModel.aggregate([{
