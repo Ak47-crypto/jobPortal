@@ -2,6 +2,8 @@
 import { useContext } from "react";
 import { ethers } from "ethers";
 import { ethersError } from "@/types/ethersError";
+import { useAppContext } from "@/context/SiteContext";
+
 export const connectWallet = async ():Promise<string[] | ethersError | Error> => {
   
   if (!window.ethereum?.isMetaMask) {
@@ -11,16 +13,18 @@ export const connectWallet = async ():Promise<string[] | ethersError | Error> =>
     
   } 
     const provider = new ethers.BrowserProvider(window.ethereum);
+    // const {setProvider}=useAppContext()
     try {
-      const { chainId } = await provider.getNetwork();
-    const chainIdHex = ethers.toBeHex(chainId);
-    if (chainIdHex != "0xaa36a7") {
-      await provider.send("wallet_switchEthereumChain", [
-        {
-          chainId: "0xaa36a7",
-        },
-      ]);
-    }
+      // TODO:remove this comment to allow chain id switch
+    //   const { chainId } = await provider.getNetwork();
+    // const chainIdHex = ethers.toBeHex(chainId);
+    // if (chainIdHex != "0xaa36a7") {
+    //   await provider.send("wallet_switchEthereumChain", [
+    //     {
+    //       chainId: "0xaa36a7",
+    //     },
+    //   ]);
+    // }
    const accounts:string[] = await provider.send("eth_requestAccounts", [])
       return accounts
     } catch (error:any) {
@@ -28,6 +32,8 @@ export const connectWallet = async ():Promise<string[] | ethersError | Error> =>
       return error 
       
     }
+
+    
 
 
 
@@ -51,3 +57,4 @@ export const connectWallet = async ():Promise<string[] | ethersError | Error> =>
   
   
 };
+

@@ -14,7 +14,7 @@ function MetaMaskLIstener() {
             return; // Exit the useEffect callback
         }
 
-        window.ethereum.on("chainChanged", (chainId) => handleChainChanged(chainId));
+        // window.ethereum.on("chainChanged", (chainId) => handleChainChanged(chainId));
         window.ethereum.on("accountsChanged", (accounts) => handleAccountChanged(accounts))
         console.log("in use Effect")
         // Clean-up function

@@ -8,3 +8,9 @@ export interface ActionRejectedError extends ethersError{
     action:"requestAccess" | "sendTransaction" | "signMessage" | "signTransaction" | "signTypedData" | "unknown";
     reason:"expired" | "rejected" | "pending"
 }
+
+export interface ProviderRpcError extends Error {
+  message: string;
+  code: number;
+  data?: unknown;
+}
