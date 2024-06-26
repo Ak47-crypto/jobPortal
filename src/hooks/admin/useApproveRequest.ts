@@ -11,6 +11,8 @@ interface Obj {
   role: string;
   walletAddress: string;
   createdAt: Date;
+  experience?:string;
+  skills?:string
 }
 function useApproveRequest() {
   const [isTransacting, setIsTransacting] = useState<boolean>(false);
@@ -24,7 +26,7 @@ function useApproveRequest() {
         const provider = new ethers.BrowserProvider(window.ethereum);
         const signer = await provider.getSigner();
         const contract = new ethers.Contract(
-          "0xA514E1C530714338356382067D02188233a43C6f",
+          process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as string,
           abi.abi,
           signer
         );
@@ -46,8 +48,26 @@ function useApproveRequest() {
           }
           else
             return false;
-
-          
+        }
+        else {
+          const contractResponse = await contract.registerWorker(
+            obj.name,
+            obj.email,
+            obj.experience,
+            obj.skills,
+            obj.walletAddress
+          );
+          const response = await contractResponse.wait();
+          if (response.status === 1) {
+            toast({
+              title: "Message",
+              description: "Worker registered successfully",
+              variant: "default",
+            });
+            return true;
+          }
+          else
+            return false;
         }
       } catch (error: any) {
         if ("shortMessage" in error) {

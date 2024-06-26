@@ -1,5 +1,6 @@
 import dbConnect from "@/lib/dbConnect";
 import providerModel from "@/model/user.provider.model";
+import workerModel from "@/model/user.worker.mode";
 
 export async function POST(request:Request){
     await dbConnect();
@@ -17,7 +18,22 @@ export async function POST(request:Request){
         await provider.save();
         return Response.json({
             success:true,
-            message:"User updated successfully"
+            message:"Provider updated successfully"
+        },{status:200})
+    }
+    else{
+        const worker =await workerModel.findOne({email})
+        if(!worker){
+            return Response.json({
+                success:false,
+                message:"User not exist"
+            },{status:400})
+        }
+        worker.isVerified=true;
+        await worker.save();
+        return Response.json({
+            success:true,
+            message:"Worker updated successfully"
         },{status:200})
     }
     } catch (error) {
