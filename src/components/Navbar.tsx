@@ -25,6 +25,10 @@ import { ethers } from "ethers";
 import { Loader2, UserRound } from "lucide-react";
 import DropDownMenu from "@/components/DropDownMenu";
 import { Separator } from "@/components/ui/separator";
+import {
+  checkUserProviderExist,
+  checkUserWorkerExist,
+} from "@/helpers/checkUserExist";
 
 function Navbar() {
   const pathname = usePathname();
@@ -44,27 +48,51 @@ function Navbar() {
       name: "Post a job",
     },
   ];
-  // useEffect(() => {
-  //     if (accounts.length > 0) {
-  //         localStorage.setItem('account', accounts[0])
-  //         toast({
-  //             title: 'Message',
-  //             description: "user logged in"
-  //         })
-  //         // localStorage.setItem('isLogged', login.toString())
-  //     }
-  //     else if (accounts.length == 0)
-  //         toast({
-  //             title: 'Message',
-  //             description: "user logged out"
-  //         })
-  // }, [accounts])
+  useEffect(() => {
+    async function handleUserExist() {
+      // &&accounts[0]!='0x66d3126465b3d91804bcf0b271b3604db90003e6'
+      if (accounts.length > 0) {
+        const functionProviderResponse = await checkUserProviderExist(accounts);
+        console.log(functionProviderResponse);
+        if (functionProviderResponse.success == false) {
+          console.log("in worker if");
+
+          const functionWorkerResponse = await checkUserWorkerExist(accounts);
+          console.log(functionWorkerResponse);
+          if (functionWorkerResponse.success === false) {
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            await provider.send("wallet_revokePermissions", [
+              {
+                eth_accounts: {},
+              },
+            ]);
+            toast({
+              title: "Message",
+              description: "User not registered with given wallet address",
+              variant: "destructive",
+            });
+          } else {
+            localStorage.setItem(
+              "user-profile",
+              JSON.stringify(functionWorkerResponse)
+            );
+          }
+        } else
+          localStorage.setItem(
+            "user-profile",
+            JSON.stringify(functionProviderResponse)
+          );
+      }
+    }
+    if (!pathname.startsWith("/dashboard")) handleUserExist();
+  }, [accounts]);
   const { isConnecting, handleConnectWallet } = useWalletConnect();
   const handleActiveState = (index: number) => {
     setIsActive(index);
   };
   const handleNavbarUserLogOut = async () => {
     localStorage.removeItem("account");
+    localStorage.removeItem("user-profile");
     const provider = new ethers.BrowserProvider(window.ethereum);
     await provider.send("wallet_revokePermissions", [
       {
@@ -115,7 +143,8 @@ function Navbar() {
               <DropDownMenu
                 navbar={true}
                 navbarLogout={handleNavbarUserLogOut}
-                trigger={<UserRound/>}
+                trigger={<UserRound />}
+                className="m-auto"
               />
             )}
 

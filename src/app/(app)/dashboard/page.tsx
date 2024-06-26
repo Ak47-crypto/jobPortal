@@ -50,6 +50,8 @@ interface User {
   id?: string;
   name: string;
   email: string;
+  experience?: string;
+  skills?: string;
   walletAddress: string;
   role: string;
   createdAt: Date;
@@ -66,13 +68,15 @@ const initialUserData: Alluser = {
   providerCount: 0,
   adminCount: 0,
 };
-interface Obj {
-  name: string;
-  email: string;
-  role: string;
-  walletAddress: string;
-  createdAt: Date;
-}
+// interface Obj {
+//   name: string;
+//   email: string;
+//   role: string;
+//   walletAddress: string;
+//   createdAt: Date;
+//   experience?:string;
+//   skills?:string
+// }
 function Dashboard() {
   const alertRef = useRef<HTMLButtonElement>(null);
   const [index, setIndex] = useState<number>(0);
@@ -86,7 +90,8 @@ function Dashboard() {
   const [chevron, setChevron] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
-  const { isTransacting,requestIndex,approveRequest,setIsTransacting } = useApproveRequest();
+  const { isTransacting, requestIndex, approveRequest, setIsTransacting } =
+    useApproveRequest();
   // const [requestIndex,setRequestIndex]=useState<any>();
   const handleActiveState = (index: number) => {
     setIsActive(index);
@@ -134,48 +139,47 @@ function Dashboard() {
     }
   };
 
-  const handleApproveRequest = async (index: number, obj: Obj) => {
-    const response = await approveRequest(obj,index);
+  const handleApproveRequest = async (index: number, obj: User) => {
+    const response = await approveRequest(obj, index);
     try {
-      if(!response){
-        return ;
-      }else {
-        
-        const response2 = await fetch('/api/update-pending-request',{
-          method:'POST',
-          headers:{
-            'content-type':'application/json'
+      if (!response) {
+        return;
+      } else {
+        const response2 = await fetch("/api/update-pending-request", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
           },
-          body:JSON.stringify({
-            email:obj.email,
-            role:obj.role
-          })
-        })
-        const data = await response2.json();
-        if(data.success){
-        setRequestData((prevRequestData) => {
-          return prevRequestData.filter((_, i) => i !== index);
+          body: JSON.stringify({
+            email: obj.email,
+            role: obj.role,
+          }),
         });
-        userData.users.push(obj)
-      }
-        if(!data.success){
+        const data = await response2.json();
+        if (data.success) {
+          setRequestData((prevRequestData) => {
+            return prevRequestData.filter((_, i) => i !== index);
+          });
+          userData.users.push(obj);
+        }
+        if (!data.success) {
           toast({
-            title:'Message',
-            description:'Backend user record not updated, please update it manually',
-            variant:'destructive'
-          })
+            title: "Message",
+            description:
+              "Backend user record not updated, please update it manually",
+            variant: "destructive",
+          });
         }
       }
     } catch (error) {
       toast({
-        title:'Message',
-        description:'Error occured',
-        variant:'destructive'
-      })
-    }finally{
-      setIsTransacting(false)
+        title: "Message",
+        description: "Error occured",
+        variant: "destructive",
+      });
+    } finally {
+      setIsTransacting(false);
     }
-      
   };
 
   const handleAdminConnectWallet = async () => {
@@ -530,25 +534,32 @@ function Dashboard() {
                                   ? "rounded-br-xl"
                                   : ""
                               }`}
-                              
                             >
                               <span className="flex justify-end gap-2">
-                                {isTransacting&&index===requestIndex?<Loader2 className="animate-spin"/>:
-                                (<Check
-                                  className=" text-[#C5CEE0] scale-90 hover:cursor-pointer hover:text-gray-500 transition-colors ease-in-out"
-                                  
-                                  onClick={isTransacting?undefined:()=>handleApproveRequest(index,obj)}
-                                  
-                                />)}
+                                {isTransacting && index === requestIndex ? (
+                                  <Loader2 className="animate-spin" />
+                                ) : (
+                                  <Check
+                                    className=" text-[#C5CEE0] scale-90 hover:cursor-pointer hover:text-gray-500 transition-colors ease-in-out"
+                                    onClick={
+                                      isTransacting
+                                        ? undefined
+                                        : () => handleApproveRequest(index, obj)
+                                    }
+                                  />
+                                )}
                                 <Trash2
-                                
                                   className=" text-[#C5CEE0] scale-90 hover:cursor-pointer hover:text-gray-500 transition-colors ease-in-out"
                                   // onClick={()=>{ if (alertRef.current) {
                                   //   {alertRef.current.click();
                                   //     setIndex(index)
                                   //   }
                                   // }}}
-                                  onClick={isTransacting?undefined:() => setAlertOpen(true)}
+                                  onClick={
+                                    isTransacting
+                                      ? undefined
+                                      : () => setAlertOpen(true)
+                                  }
                                 />
                               </span>
                             </TableCell>

@@ -12,6 +12,8 @@ export  async function GET(request:Request){
               name: 1,
               email: 1,
               walletAddress: 1,
+              experience:1,
+              skills:1,
               role:1,
               createdAt:1
             }
