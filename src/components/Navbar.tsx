@@ -1,4 +1,5 @@
 "use client";
+import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useToast } from "@/components/ui/use-toast";
@@ -93,6 +94,7 @@ function Navbar() {
   const handleNavbarUserLogOut = async () => {
     localStorage.removeItem("account");
     localStorage.removeItem("user-profile");
+    Cookies.remove('userData')
     const provider = new ethers.BrowserProvider(window.ethereum);
     await provider.send("wallet_revokePermissions", [
       {
@@ -111,7 +113,7 @@ function Navbar() {
       >
         <div id="logo" className="py-5 px-5 flex items-center ">
           <Image
-            src={"logo.svg"}
+            src="/logo.svg"
             width={70}
             height={70}
             alt="metamask fox image"

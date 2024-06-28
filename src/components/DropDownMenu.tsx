@@ -9,7 +9,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-interface isForType extends React.HTMLAttributes<HTMLDivElement>{
+import Link from "next/link";
+interface isForType extends React.HTMLAttributes<HTMLDivElement> {
   navbar?: boolean;
   adminPage?: boolean;
   trigger: any;
@@ -36,28 +37,36 @@ function DropDownMenu({
   //     window.location.reload()
   // }
   return (
-    <><div {...rest}>
-      <DropdownMenu >
-        <DropdownMenuTrigger>
-          {navbar && trigger}
-          {adminPage && <div onClick={onClick}>{trigger}</div>}
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56">
-          <DropdownMenuLabel>My account</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <User className="mr-2 h-4 w-4" />
-            <span>Profile</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <LogOut className="mr-2 h-4 w-4" />
-            {navbar && <span onClick={navbarLogout}>Log Out</span>}
-            {adminPage && <span onClick={adminLogout}>Log Out</span>}
-          </DropdownMenuItem>
-          {/* <DropdownMenuItem>Team</DropdownMenuItem> */}
-          {/* <DropdownMenuItem>Subscription</DropdownMenuItem> */}
-        </DropdownMenuContent>
-      </DropdownMenu>
+    <>
+      <div {...rest}>
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            {navbar && trigger}
+            {adminPage && <div onClick={onClick}>{trigger}</div>}
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56">
+            <DropdownMenuLabel>My account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {navbar && (
+              <Link href={"/user/dashboard"}>
+                <DropdownMenuItem className="w-full">
+                  <User className="mr-2 h-4 w-4" />
+
+                  <span>Profile</span>
+                </DropdownMenuItem>
+              </Link>
+            )}
+
+            <DropdownMenuItem>
+              <LogOut className="mr-2 h-4 w-4" />
+              {navbar && <span onClick={navbarLogout}>Log Out</span>}
+              {adminPage && <span onClick={adminLogout}>Log Out</span>}
+            </DropdownMenuItem>
+
+            {/* <DropdownMenuItem>Team</DropdownMenuItem> */}
+            {/* <DropdownMenuItem>Subscription</DropdownMenuItem> */}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       {/* admin */}
     </>

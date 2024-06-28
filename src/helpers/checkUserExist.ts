@@ -1,10 +1,11 @@
 import { ethers } from "ethers";
+import Cookies from 'js-cookie'
 import abi from "@/contract/JobPortal.json";
 interface User {
   id?: number;
   name: string;
   email: string;
-  experienc?: string;
+  experience?: string;
   skills?: string;
   isActive: string;
   role?: string;
@@ -42,6 +43,7 @@ export const checkUserProviderExist = async (
       walletAddress: address,
       createdAt: new Date(ethers.toNumber(timestamp)),
     };
+    Cookies.set('userData',JSON.stringify(userReturn));
     return { success: true, data: userReturn };
   } catch (error: any) {
     if (ethers.isError(error, "CALL_EXCEPTION")) {
@@ -69,11 +71,14 @@ export const checkUserWorkerExist = async (
     const userReturn: User = {
       name,
       email,
+      experience,
+      skills,
       isActive,
       role: "worker",
       walletAddress: user[0],
       // createdAt: new Date(ethers.toNumber(timestamp))
     };
+    Cookies.set('userData',JSON.stringify(userReturn));
     return { success: true, data: userReturn };
   } catch (error: any) {
     if (ethers.isError(error, "CALL_EXCEPTION")) {

@@ -16,7 +16,7 @@ interface Obj {
 }
 function useApproveRequest() {
   const [isTransacting, setIsTransacting] = useState<boolean>(false);
-  const [requestIndex,setRequestIndex]=useState<any>();
+  const [requestIndex,setRequestIndex]=useState<number>();
   const { toast } = useToast();
   const approveRequest = async (obj: Obj,index:number) => {
     if (localStorage.getItem("account")) {
