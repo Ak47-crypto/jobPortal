@@ -28,7 +28,7 @@ export async function middleware(request: NextRequest) {
   }
   if (
     !userData &&
-    (url.pathname.startsWith("/user/dashboard"))
+    (url.pathname.startsWith("/user/profile"))
   ) {
     return NextResponse.redirect(new URL("/", request.url));
   }
