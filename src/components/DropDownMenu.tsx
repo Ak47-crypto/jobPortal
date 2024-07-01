@@ -1,5 +1,7 @@
 import React from "react";
+import Cookies from "js-cookie";
 import { ethers } from "ethers";
+import { UserType } from "@/types/userType";
 import { UserRound, User, LogOut } from "lucide-react";
 import {
   DropdownMenu,
@@ -48,7 +50,7 @@ function DropDownMenu({
             <DropdownMenuLabel>My account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {navbar && (
-              <Link href={"/user/dashboard"}>
+              <Link href={`/user/profile`}>
                 <DropdownMenuItem className="w-full">
                   <User className="mr-2 h-4 w-4" />
 
