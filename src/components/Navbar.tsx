@@ -40,16 +40,27 @@ function Navbar() {
   const [isActive, setIsActive] = useState<number | null>(null);
   const navLinks = [
     {
+      name: "Home",
+      link:'/'
+    },
+    {
       name: "Find work",
+      link:'/'
     },
     {
       name: "Applications",
+      link:"/"
     },
     {
       name: "Post a job",
+      link:"/job"
     },
   ];
   useEffect(() => {
+    if(pathname.startsWith('/'))
+      setIsActive(0)
+    if(pathname.startsWith('/job'))
+      setIsActive(3)
     async function handleUserExist() {
       // &&accounts[0]!='0x66d3126465b3d91804bcf0b271b3604db90003e6'
       if (accounts.length > 0) {
@@ -89,6 +100,7 @@ function Navbar() {
   }, [accounts]);
   const { isConnecting, handleConnectWallet } = useWalletConnect();
   const handleActiveState = (index: number) => {
+    
     setIsActive(index);
   };
   const handleNavbarUserLogOut = async () => {
@@ -136,7 +148,8 @@ function Navbar() {
                   } hover:cursor-pointer`}
                   onClick={() => handleActiveState(index)}
                 >
-                  {obj.name}
+                  <Link href={obj.link}>{obj.name}</Link>
+                  
                 </li>
               ))}
             </ul>
