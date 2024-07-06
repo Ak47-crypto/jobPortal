@@ -1,7 +1,10 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import {debounce} from 'lodash'
 import { UserType } from "@/types/userType";
 import { Textarea } from "@/components/ui/textarea";
+import { BigNumberish } from "ethers";
+import { Listener } from "ethers";
 import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 import useJobPost from "@/hooks/provider/useJobPost";
@@ -28,113 +31,104 @@ import { ethers } from "ethers";
 import abi from "@/contract/JobPortal.json";
 function Job() {
   const router = useRouter();
-  const {isTransacting,jobPost}=useJobPost();
+  const { isTransacting, jobPost } = useJobPost();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [userData, setUserData] = useState<UserType | undefined>(undefined);
-  const [contract, setContract] = useState<any>(null);
-  useEffect(()=>{
-    const setupContract = async () => {
-      if (typeof window.ethereum !== 'undefined') {
-        try {
-          const provider = new ethers.BrowserProvider(window.ethereum);
-          const signer = await provider.getSigner();
-          const newContract = new ethers.Contract(
-            process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as string,
-            abi.abi,
-            signer
-          );
-          setContract(newContract);
-          const filter = newContract.filters.JobAdded();
-          const events = await newContract.queryFilter(filter, 1,1000); // Last 1000 blocks
-          console.log("Past JobAdded events:", events);
-          // console.log('in setting contract',contract)
-        } catch (error) {
-          console.error("Failed to setup contract:", error);
-        }
-      }
-    };
-
-    setupContract();
-  },[])
 
   useEffect(() => {
-    
-    if (contract) {
-      console.log('in if')
-      const handleJobAdded = (provider:any, jobId:any, title:any, location:any, salary:any, description:any, timestamp:any, event:any) => {
-        const data = {
-          provider: provider.toString(),
-          jobId: jobId.toString(),
+    const handleEvent = async () => {
+      const handleJobAdded=debounce(async(provider:string,jobId:BigNumberish,title:string,location:string,salary:string,description:string,timestamp:BigNumberish,event:any)=>{
+        const data ={
+          provider,
+          jobId:ethers.toNumber(jobId),
           title,
           location,
           salary,
           description,
-          timestamp: timestamp.toString()
-        };
-        console.log(data, 'in data');
-        console.log(event, 'in event');
-      };
-
-      // contract.on('JobAdded', handleJobAdded);
-      contract.on('JobAdded', handleJobAdded);
-
-      // Cleanup function to remove the event listener
+          timestamp:timestamp.toString()
+        }
+        console.log(data,event)
+        if(data.provider){
+          try {
+            const response = await fetch('/api/job-add',{
+              method:"POST",
+              headers:{
+                "content-type":"application/json"
+              },
+              body: JSON.stringify(data)
+            })
+            const data2=await response.json()
+              console.log(data2)
+          } catch (error) {
+            console.log(error)
+          }
+          
+        }
+      },1000)
+      const providers = new ethers.WebSocketProvider(
+        `wss://sepolia.infura.io/ws/v3/${process.env.NEXT_PUBLIC_WEBSOCKET_KEY}`
+      );
+      // console.log(providers);
+      
+      const contract = new ethers.Contract(
+        process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as string,
+        abi.abi,
+        providers
+      );
+      contract.on('JobAdded',handleJobAdded)
       return () => {
-        contract.off('JobAdded', handleJobAdded);
-      };
-    }
-  }, [contract]);
+        contract.removeListener('JobAdded',handleJobAdded)
+    };
+    };
+    handleEvent();
+  }, []);
 
   useEffect(() => {
     const data = Cookies.get("userData");
-    console.log(data)
+    console.log(data);
     if (data) {
-      const dataParsed:UserType = JSON.parse(data);
-      if(!(dataParsed.role=='provider'))
-        router.push('/')
+      const dataParsed: UserType = JSON.parse(data);
+      if (!(dataParsed.role == "provider")) router.push("/");
       setUserData(dataParsed);
-    }else
-    router.push('/')
+    } else router.push("/");
   }, []);
   const form = useForm<z.infer<typeof jobSchema>>({
     resolver: zodResolver(jobSchema),
     defaultValues: {
       title: "",
-      location:"",
-      salary:'',
+      location: "",
+      salary: "",
       description: "",
     },
   });
   const handleSubmit = async (data: z.infer<typeof jobSchema>) => {
     try {
-      const response=await jobPost(data);
+      const response = await jobPost(data);
       console.log(response);
-      
-      if(response==true){
+
+      if (response == true) {
         toast({
-          title:'Message',
-          description:'Job post successfully',
-          variant:'default'
-        })
-        return ;
+          title: "Message",
+          description: "Job post successfully",
+          variant: "default",
+        });
+        return;
+      } else if (!response) {
+        toast({
+          title: "Message",
+          description: "Error while posting job",
+          variant: "destructive",
+        });
+        return;
       }
-        else if(!response){
-          toast({
-            title:'Message',
-            description:'Error while posting job',
-            variant:'destructive'
-          })
-          return ;
-        }
-      
-    } catch (error:any) {
-      console.log(error,'in catch')
+    } catch (error: any) {
+      console.log(error, "in catch");
       // if(ethers.isError(error.message,'ACTION_REJECTED'))
       toast({
-        title:'Message',
-        description:error.shortMessage,
-        variant:'destructive'
-      })
+        title: "Message",
+        description: error.shortMessage,
+        variant: "destructive",
+      });
     }
   };
   return (
@@ -157,17 +151,19 @@ function Job() {
       <section className="grid grid-cols-2 mt-20 px-40">
         <div id="col-1">
           <div className="mb-44">
-          <h1 className="text-[32px]">1. Job poster information</h1>
-          <p className="text-[16px] text=[#000000] opacity-75">
-            Stay organized and informed by having
-            <br /> all your job poster information in one place.
-          </p>
+            <h1 className="text-[32px]">1. Job poster information</h1>
+            <p className="text-[16px] text=[#000000] opacity-75">
+              Stay organized and informed by having
+              <br /> all your job poster information in one place.
+            </p>
           </div>
           <div>
-          <h1 className="text-[32px]">2. Job information</h1>
-          <p className="text-[16px] text=[#000000] opacity-75">
-          Stay informed and make informed hiring<br/>decisions with complete and detailed job information.
-          </p>
+            <h1 className="text-[32px]">2. Job information</h1>
+            <p className="text-[16px] text=[#000000] opacity-75">
+              Stay informed and make informed hiring
+              <br />
+              decisions with complete and detailed job information.
+            </p>
           </div>
         </div>
 
@@ -204,7 +200,9 @@ function Job() {
                     name="title"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-normal ">Job title <span className="text-[#F10303]">*</span></FormLabel>
+                        <FormLabel className="font-normal ">
+                          Job title <span className="text-[#F10303]">*</span>
+                        </FormLabel>
                         <FormControl>
                           <Input
                             className="rounded-3xl"
@@ -226,7 +224,8 @@ function Job() {
                       <FormItem>
                         <div className="flex justify-between">
                           <FormLabel className="mt-2 font-normal">
-                            Job location <span className="text-[#F10303]">*</span>
+                            Job location{" "}
+                            <span className="text-[#F10303]">*</span>
                           </FormLabel>
                         </div>
                         <FormControl>
@@ -244,7 +243,6 @@ function Job() {
                   />
 
                   <FormField
-                    
                     control={form.control}
                     name="salary"
                     render={({ field }) => (
@@ -268,25 +266,30 @@ function Job() {
                     )}
                   />
                   <div className="">
-                    <p className="mb-3 font-normal leading-none text-sm">Job status</p>
-                    <Input disabled placeholder="Active" className="rounded-3xl"/>
+                    <p className="mb-3 font-normal leading-none text-sm">
+                      Job status
+                    </p>
+                    <Input
+                      disabled
+                      placeholder="Active"
+                      className="rounded-3xl"
+                    />
                   </div>
                   <FormField
-                    
                     control={form.control}
                     name="description"
                     render={({ field }) => (
                       <FormItem className="col-span-2">
                         <div className="flex justify-between">
                           <FormLabel className="mt-1 font-normal">
-                            Enter job description <span className="text-[#F10303]">*</span>
+                            Enter job description{" "}
+                            <span className="text-[#F10303]">*</span>
                           </FormLabel>
                         </div>
                         <FormControl>
                           <Textarea
                             className="rounded-3xl placeholder:p-1"
                             placeholder="Please submit a thorough job description that encompasses all necessary requirements, responsibilities, and any other relevant details."
-                            
                             {...field}
                             required
                           />
@@ -302,7 +305,6 @@ function Job() {
                   variant={"default"}
                   disabled={isTransacting}
                   className="bg-[#2062E2] rounded-3xl"
-                  
                 >
                   {isTransacting ? (
                     <>

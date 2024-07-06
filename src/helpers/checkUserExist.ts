@@ -41,7 +41,7 @@ export const checkUserProviderExist = async (
       isActive,
       role: "provider",
       walletAddress: address,
-      createdAt: new Date(ethers.toNumber(timestamp)),
+      createdAt: new Date(ethers.toNumber(timestamp)*1000),
     };
     Cookies.set('userData',JSON.stringify(userReturn));
     return { success: true, data: userReturn };

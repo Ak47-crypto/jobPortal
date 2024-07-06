@@ -18,7 +18,7 @@ export default function Dashboard() {
     setUserData(JSON.parse(Cookies.get("userData") as string));
     console.log(userData);
   }, []);
-  console.log(userData);
+  console.log(userData?.createdAt);
   return (
     <main className="min-h-screen flex justify-center items-center">
       <Card>

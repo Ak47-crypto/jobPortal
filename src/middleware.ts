@@ -28,7 +28,7 @@ export async function middleware(request: NextRequest) {
   }
   if (
     !userData &&
-    (url.pathname.startsWith("/user/profile"))
+    (url.pathname.startsWith("/user/profile")||url.pathname.startsWith("/job"))
   ) {
     return NextResponse.redirect(new URL("/", request.url));
   }

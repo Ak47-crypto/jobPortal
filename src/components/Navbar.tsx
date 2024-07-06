@@ -96,7 +96,10 @@ function Navbar() {
           );
       }
     }
-    if (!pathname.startsWith("/dashboard")) handleUserExist();
+    if (!pathname.startsWith("/dashboard")) 
+      {console.log("in nav bar ");
+      
+        handleUserExist();}
   }, [accounts]);
   const { isConnecting, handleConnectWallet } = useWalletConnect();
   const handleActiveState = (index: number) => {
@@ -186,7 +189,7 @@ function Navbar() {
                 <AlertDialogHeader>
                   <AlertDialogTitle className="text-center mb-5 text-[24px]">
                     <Image
-                      src={"logo.svg"}
+                      src={"/logo.svg"}
                       width={101}
                       height={101}
                       alt="metamask fox image"
@@ -203,7 +206,7 @@ function Navbar() {
                       }}
                     >
                       <Image
-                        src={"meta-fox.svg"}
+                        src={"/meta-fox.svg"}
                         width={33}
                         height={33}
                         alt="metamask fox image"
