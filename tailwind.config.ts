@@ -74,7 +74,31 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  // plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    function({ addUtilities }:any) {
+      const newUtilities = {
+        '.ultra-thin-scrollbar': {
+          'scrollbar-width': 'thin',
+          'scrollbar-color': '#cbd5e0 #edf2f7', // Subtle gray colors
+        },
+        '.ultra-thin-scrollbar::-webkit-scrollbar': {
+          width: '2px', // Even thinner scrollbar
+        },
+        '.ultra-thin-scrollbar::-webkit-scrollbar-track': {
+          background: '#edf2f7', // Light gray background
+        },
+        '.ultra-thin-scrollbar::-webkit-scrollbar-thumb': {
+          background: '#cbd5e0', // Medium gray thumb
+        },
+        '.ultra-thin-scrollbar::-webkit-scrollbar-thumb:hover': {
+          background: '#a0aec0', // Darker gray on hover
+        },
+      }
+      addUtilities(newUtilities, ['responsive'])
+    }
+  ],
 } satisfies Config
 
 export default config

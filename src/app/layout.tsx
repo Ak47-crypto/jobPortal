@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/toaster"
 import MetaMaskLIstener from "@/components/MetaMaskLIstener";
 import Navbar from "@/components/Navbar";
 import AuthProvider from "@/context/AuthProvider";
+import Footer from "@/components/Footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -27,10 +28,13 @@ export default function RootLayout({
         <MyProvider>
           <Navbar/>
         {children}
+        <Footer/>
         <MetaMaskLIstener/>
+        
         </MyProvider>
         </AuthProvider>
         <Toaster/>
+        
         </body>
     </html>
   );

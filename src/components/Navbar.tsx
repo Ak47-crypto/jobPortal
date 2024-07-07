@@ -102,8 +102,8 @@ function Navbar() {
         handleUserExist();}
   }, [accounts]);
   const { isConnecting, handleConnectWallet } = useWalletConnect();
-  const handleActiveState = (index: number) => {
-    
+  const handleActiveState = (index: number,obj:any) => {
+    router.replace(obj.link)
     setIsActive(index);
   };
   const handleNavbarUserLogOut = async () => {
@@ -149,9 +149,9 @@ function Navbar() {
                   className={`${
                     isActive === index ? "text-slate-400" : "text-slate-700"
                   } hover:cursor-pointer`}
-                  onClick={() => handleActiveState(index)}
+                  onClick={() => handleActiveState(index,obj)}
                 >
-                  <Link href={obj.link}>{obj.name}</Link>
+                  {obj.name}
                   
                 </li>
               ))}
