@@ -122,11 +122,11 @@ function Navbar() {
   return (
     <nav>
       <div
-        className={`flex justify-between px-[155px]   ${
+        className={`flex justify-between px-[40px]   ${
           pathname.startsWith("/sign-up") ? "shadowm" : ""
         }`}
       >
-        <div id="logo" className="py-5 px-5 flex items-center ">
+        <div id="logo" className="py-5  flex items-center ">
           <Image
             src="/logo.svg"
             width={70}

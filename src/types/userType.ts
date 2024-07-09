@@ -9,3 +9,14 @@ export interface UserType {
     walletAddress?: string;
     createdAt?: Date;
   }
+
+  export interface StateProps {
+    state: string;
+    stateCode: string;
+    districtCode: string;
+    district: string;
+    headquarters: string;
+    population: number;
+    area: number;
+    density: number;
+}

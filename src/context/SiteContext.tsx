@@ -6,10 +6,12 @@ interface MyContextProps {
   accounts: string[];
   provider?:ethers.JsonRpcProvider;
   signer?:ethers.JsonRpcSigner;
+  stateValue:string;
   setAccounts: (value: string[]) => void;
   setLogin:(value:boolean)=>void;
   setProvider:(provider:ethers.JsonRpcProvider)=>void;
   setSigner:(signer:ethers.JsonRpcSigner)=>void;
+  setStateValue:(value: string) => void;
 }
 
 const MyContext = createContext<MyContextProps | undefined>(undefined);
@@ -17,12 +19,13 @@ const MyContext = createContext<MyContextProps | undefined>(undefined);
 
 
 export const MyProvider=({children}:{children:React.ReactNode}) => {
+  const [stateValue,setStateValue]=useState<string>("")
   const [signer,setSigner]=useState<ethers.JsonRpcSigner>()
   const [provider,setProvider]=useState<ethers.JsonRpcProvider>()
   const [accounts, setAccounts] = useState<string[]>([]);
   let [login,setLogin]=useState<boolean>(false)
   return (
-    <MyContext.Provider value={{ accounts,login,provider,signer,setAccounts,setLogin,setProvider,setSigner }}>
+    <MyContext.Provider value={{ accounts,login,provider,signer,stateValue,setAccounts,setLogin,setProvider,setSigner,setStateValue }}>
       {children}
     </MyContext.Provider>
   );

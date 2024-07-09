@@ -27,7 +27,7 @@ import { useEffect, useState, useRef } from "react";
 import { toast } from "@/components/ui/use-toast";
 import { Separator } from "@/components/ui/separator";
 import Footer from "@/components/Footer";
-
+import Link from "next/link";
 interface JobType {
   provider: string;
   jobId: number;
@@ -172,9 +172,11 @@ export default function Home() {
             Empowering Youth through No Experience Job Opportunities
           </p>
           <div className="flex justify-center">
+            <Link href={"/jobs-and-opportunity"}>
             <Button className="w-40 h-14 text-2xl mb-5 rounded-xl">
               Find Job
             </Button>
+            </Link>
           </div>
         </div>
 

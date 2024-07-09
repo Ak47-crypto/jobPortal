@@ -44,7 +44,7 @@ import dbConnect from "@/lib/dbConnect";
 export async function POST(request: Request) {
   await dbConnect();
   try {
-    const { startIndex, endIndex, location } = await request.json();
+    const { startIndex, endIndex, location,title } = await request.json();
     console.log(location)
     let pipeline:any[] = [
       // Unwind the job array
@@ -56,6 +56,13 @@ export async function POST(request: Request) {
       pipeline.push({
         $match: {
           "job.location": { $regex: location, $options: "i" }
+        }
+      });
+    }
+    if (title) {
+      pipeline.push({
+        $match: {
+          "job.title": { $regex: title, $options: "i" }
         }
       });
     }

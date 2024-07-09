@@ -19,7 +19,7 @@ interface JobType {
 interface JobCardProps {
   job: JobType;
   border?: string;
-  styles?:string;
+  styles?: string;
 }
 export default function JobCard({ job, border }: JobCardProps) {
   const [jobDate, setJobDate] = useState<Date>();
@@ -121,7 +121,7 @@ export function JobCard2({ job, border }: JobCardProps) {
 
 // job card 3
 
-export function JobCard3({ job, styles,border }: JobCardProps) {
+export function JobCard3({ job, styles, border }: JobCardProps) {
   const [jobDate, setJobDate] = useState<Date>();
   useEffect(() => {
     const date = new Date(Number(job.timestamp) * 1000);
