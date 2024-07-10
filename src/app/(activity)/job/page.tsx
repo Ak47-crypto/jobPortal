@@ -64,7 +64,7 @@ function Job() {
           }
           
         }
-      },1000)
+      },5000)
       const providers = new ethers.WebSocketProvider(
         `wss://sepolia.infura.io/ws/v3/${process.env.NEXT_PUBLIC_WEBSOCKET_KEY}`
       );
@@ -85,7 +85,7 @@ function Job() {
 
   useEffect(() => {
     const data = Cookies.get("userData");
-    console.log(data);
+    
     if (data) {
       const dataParsed: UserType = JSON.parse(data);
       if (!(dataParsed.role == "provider")) router.push("/");
@@ -148,7 +148,7 @@ function Job() {
         </div>
       </main>
       {/* grid */}
-      <section className="grid grid-cols-2 mt-20 px-40">
+      <section className="grid grid-cols-2 mt-20 px-40 mb-20">
         <div id="col-1">
           <div className="mb-44">
             <h1 className="text-[32px]">1. Job poster information</h1>

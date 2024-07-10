@@ -2,7 +2,7 @@ import React from "react";
 import Cookies from "js-cookie";
 import { ethers } from "ethers";
 import { UserType } from "@/types/userType";
-import { UserRound, User, LogOut } from "lucide-react";
+import { UserRound, User, LogOut, BriefcaseBusiness } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
+
 interface isForType extends React.HTMLAttributes<HTMLDivElement> {
   navbar?: boolean;
   adminPage?: boolean;
@@ -38,6 +39,8 @@ function DropDownMenu({
   //     ])
   //     window.location.reload()
   // }
+const cookieData=Cookies.get("userData")
+const userData:UserType=JSON.parse(cookieData as string) 
   return (
     <>
       <div {...rest}>
@@ -50,6 +53,7 @@ function DropDownMenu({
             <DropdownMenuLabel>My account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {navbar && (
+              <>
               <Link href={`/user/profile`}>
                 <DropdownMenuItem className="w-full">
                   <User className="mr-2 h-4 w-4" />
@@ -57,6 +61,14 @@ function DropDownMenu({
                   <span>Profile</span>
                 </DropdownMenuItem>
               </Link>
+              {(userData.role==='provider')&&
+               <Link href={`/job/job-list`}>
+               <DropdownMenuItem className="w-full">
+                 <BriefcaseBusiness className="mr-2 h-4 w-4" />
+                 <span>Jobs</span>
+               </DropdownMenuItem>
+             </Link>}
+             </>
             )}
 
             <DropdownMenuItem>

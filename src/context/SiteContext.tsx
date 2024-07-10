@@ -1,12 +1,15 @@
 'use client'
-import { createContext, useState, ReactNode, FC,useContext } from 'react';
+import { createContext, useState, ReactNode, FC,useContext, useEffect } from 'react';
 import { ethers } from 'ethers';
+import { UserType } from '@/types/userType';
 interface MyContextProps {
   login:boolean;
   accounts: string[];
   provider?:ethers.JsonRpcProvider;
   signer?:ethers.JsonRpcSigner;
   stateValue:string;
+  userData:UserType | null |undefined;
+  setUserData:(value: UserType|null|undefined) => void;
   setAccounts: (value: string[]) => void;
   setLogin:(value:boolean)=>void;
   setProvider:(provider:ethers.JsonRpcProvider)=>void;
@@ -23,9 +26,14 @@ export const MyProvider=({children}:{children:React.ReactNode}) => {
   const [signer,setSigner]=useState<ethers.JsonRpcSigner>()
   const [provider,setProvider]=useState<ethers.JsonRpcProvider>()
   const [accounts, setAccounts] = useState<string[]>([]);
+  const [userData,setUserData]=useState<UserType | null |undefined>()
+  useEffect(()=>{
+    // setUserData(JSON.parse(localStorage.getItem("userData") as string))
+
+  },[])
   let [login,setLogin]=useState<boolean>(false)
   return (
-    <MyContext.Provider value={{ accounts,login,provider,signer,stateValue,setAccounts,setLogin,setProvider,setSigner,setStateValue }}>
+    <MyContext.Provider value={{ accounts,login,provider,signer,stateValue,userData,setAccounts,setLogin,setProvider,setSigner,setStateValue,setUserData }}>
       {children}
     </MyContext.Provider>
   );

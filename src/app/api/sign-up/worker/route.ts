@@ -1,6 +1,7 @@
 import dbConnect from "@/lib/dbConnect";
 import workerModel from "@/model/user.worker.mode";
 export  async function POST(request:Request){
+  
     await dbConnect();
     try {
         const {name,email,experience,skills,walletAddress}=await request.json();
@@ -21,7 +22,7 @@ export  async function POST(request:Request){
             email,
             experience,
             skills,
-            walletAddress
+            walletAddress:walletAddress.toLowerCase()
           });
     
           await worker.save();

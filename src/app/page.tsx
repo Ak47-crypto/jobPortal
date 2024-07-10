@@ -308,22 +308,23 @@ export default function Home() {
                 <>
                   {allJobs.length > 0 ? (
                     allJobs.map((job, index) => (
-                      <>
-                        {index < 4 && (
+                      
+                        index < 4 && (
                           <div
-                            key={index}
+                            key={job._id}
                             onClick={() => handleShowJobDetails(index)}
                             className={`hover:cursor-pointer rounded-3xl`}
                           >
                             <JobCard2
+                            
                               job={job}
                               border={
                                 activeJob == index ? "border-2" : "border"
                               }
                             />
                           </div>
-                        )}
-                      </>
+                        )
+                      
                     ))
                   ) : (
                     <>

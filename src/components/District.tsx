@@ -79,7 +79,7 @@ const StateDropdown = () => {
                         <ScrollArea className="h-[300px] w-full">
                             {S.map((state) => (
                                 <CommandItem
-                                    key={state.population}
+                                    key={state.population+state.district+state.state}
                                     value={state.district}
                                     onSelect={(currentValue) => {
                                         console.log(currentValue)

@@ -51,7 +51,7 @@ interface Data {
   job: JobType[];
 }
 function JobsAndOpportunity() {
-  const [isFetching, setIsFetching] = useState<boolean>(false);
+  const [isFetching, setIsFetching] = useState<boolean>(true);
   const [isFetchingJobDetails, setIsFetchingJobDetails] =
     useState<boolean>(false);
   const [reachedEnd, setReachedEnd] = useState<boolean>(false);
@@ -200,10 +200,10 @@ function JobsAndOpportunity() {
             </>
           ) : allJobs.length > 0 ? (
             allJobs.map((job, index) => (
-              <>
-                {index < 8 && (
+              
+                index < 8 && (
                   <div
-                    key={index + `${job.title}`}
+                    key={job._id}
                     onClick={() => handleShowJobDetails(index)}
                     // className={`hover:${"border-l-4 border-[#0073e6] border-opacity-50 cursor-pointer"}`}
                     // className={`${activeJob !== index ? "hover:border-l-4 hover:border-[#0073e6] hover:border-opacity-50 hover:cursor-pointer hover:rounded-l-none" : "border-l-4 border-white"}`}
@@ -223,8 +223,8 @@ function JobsAndOpportunity() {
                       }
                     />
                   </div>
-                )}
-              </>
+                )
+              
             ))
           ) : (
             <div className=" w-full bg-white flex justify-center   items-center h-full mb-10 py-5">
@@ -233,7 +233,7 @@ function JobsAndOpportunity() {
             
           )}
         </section>
-        <section id="right" className={`${!isFetching?"":"w-full"}`}>
+        <section id="right" className={`${isFetching?"w-full":showJobDetails?"w-full":""}`}>
           <div id="job-details" className="">
             {isFetching || isFetchingJobDetails ? (
               <>

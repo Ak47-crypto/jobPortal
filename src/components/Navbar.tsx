@@ -7,8 +7,10 @@ import { Button } from "./ui/button";
 import { useWalletConnect } from "@/hooks/useWalletConnect";
 import { useAppContext } from "@/context/SiteContext";
 import { usePathname } from "next/navigation";
+import useCheckUserExist from "@/hooks/user/useCheckUserExist";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,51 +28,61 @@ import { ethers } from "ethers";
 import { Loader2, UserRound } from "lucide-react";
 import DropDownMenu from "@/components/DropDownMenu";
 import { Separator } from "@/components/ui/separator";
-import {
-  checkUserProviderExist,
-  checkUserWorkerExist,
-} from "@/helpers/checkUserExist";
+import { UserType } from "@/types/userType";
+// import {
+//   checkUserProviderExist,
+//   checkUserWorkerExist,
+// } from "@/helpers/checkUserExist";
 
 function Navbar() {
+  // const [userData, setUserData] = useState<UserType | undefined>();
+ 
   const pathname = usePathname();
+  const cookieData = Cookies.get("userData");
+  const {checkUserProviderExist,checkUserWorkerExist} = useCheckUserExist()
   const router = useRouter();
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const { toast } = useToast();
-  const { setAccounts, setLogin, accounts, login } = useAppContext();
+  const { setAccounts, setLogin,setUserData, accounts, login ,userData} = useAppContext();
   const [isActive, setIsActive] = useState<number | null>(null);
+  const [isLoading2, setIsLoading2] = useState<boolean>(true);
   const navLinks = [
     {
       name: "Home",
-      link:'/'
+      link: "/",
     },
     {
       name: "Find work",
-      link:'/'
+      link: "/jobs-and-opportunity",
     },
     {
       name: "Applications",
-      link:"/"
+      link: "/",
     },
     {
       name: "Post a job",
-      link:"/job"
+      link: "/job",
     },
   ];
   useEffect(() => {
-    if(pathname.startsWith('/'))
-      setIsActive(0)
-    if(pathname.startsWith('/job'))
-      setIsActive(3)
+    if (cookieData) {
+      setUserData(JSON.parse(cookieData));
+      console.log("in useeffect navbar");
+    }
+    setIsLoading2(false);
+  }, []);
+  useEffect(() => {
+    if (pathname.startsWith("/")) setIsActive(0);
+    if (pathname.startsWith("/job")) setIsActive(3);
+
     async function handleUserExist() {
       // &&accounts[0]!='0x66d3126465b3d91804bcf0b271b3604db90003e6'
       if (accounts.length > 0) {
         const functionProviderResponse = await checkUserProviderExist(accounts);
-        console.log(functionProviderResponse);
-        if (functionProviderResponse.success == false) {
-          console.log("in worker if");
 
+        if (functionProviderResponse.success == false) {
           const functionWorkerResponse = await checkUserWorkerExist(accounts);
-          console.log(functionWorkerResponse);
+
           if (functionWorkerResponse.success === false) {
             const provider = new ethers.BrowserProvider(window.ethereum);
             await provider.send("wallet_revokePermissions", [
@@ -84,32 +96,36 @@ function Navbar() {
               variant: "destructive",
             });
           } else {
-            localStorage.setItem(
-              "user-profile",
-              JSON.stringify(functionWorkerResponse)
-            );
+            // window.location.reload()
+            //  if("data" in functionWorkerResponse)
+            //     setUserData(functionWorkerResponse.data)
           }
-        } else
-          localStorage.setItem(
-            "user-profile",
-            JSON.stringify(functionProviderResponse)
-          );
+        } else {
+          // window.location.reload()
+          // localStorage.setItem(
+          //   "user-profile",
+          //   JSON.stringify(functionProviderResponse)
+          // );
+          // if("data" in functionProviderResponse)
+          //   setUserData(functionProviderResponse.data)
+        }
       }
     }
-    if (!pathname.startsWith("/dashboard")) 
-      {console.log("in nav bar ");
-      
-        handleUserExist();}
+    if (!pathname.startsWith("/dashboard")) {
+      handleUserExist();
+    }
   }, [accounts]);
   const { isConnecting, handleConnectWallet } = useWalletConnect();
-  const handleActiveState = (index: number,obj:any) => {
-    router.replace(obj.link)
+  const handleActiveState = (index: number, obj: any) => {
+    // router.replace(obj.link);
     setIsActive(index);
   };
   const handleNavbarUserLogOut = async () => {
-    localStorage.removeItem("account");
-    localStorage.removeItem("user-profile");
-    Cookies.remove('userData')
+    // localStorage.removeItem("account");
+    // localStorage.removeItem("user-profile");
+    setUserData(null)
+    Cookies.remove("userData");
+    
     const provider = new ethers.BrowserProvider(window.ethereum);
     await provider.send("wallet_revokePermissions", [
       {
@@ -118,9 +134,9 @@ function Navbar() {
     ]);
     window.location.reload();
   };
-  if (pathname.startsWith("/dashboard")) return null;
+  if (pathname.startsWith("/dashboard")) return <></>
   return (
-    <nav>
+    <div>
       <div
         className={`flex justify-between px-[40px]   ${
           pathname.startsWith("/sign-up") ? "shadowm" : ""
@@ -142,36 +158,37 @@ function Navbar() {
           pathname.startsWith("/sign-up") || pathname.startsWith("/admin-login")
         ) && (
           <>
-            <ul className="flex gap-x-6 items-center justify-center w-full  px-5 py-5">
+            <div className="flex gap-x-6 items-center justify-center w-full  px-5 py-5">
               {navLinks.map((obj, index) => (
-                <li
-                  key={index}
+                
+                <Link
+                  key={index + obj.link + obj.name}
                   className={`${
                     isActive === index ? "text-slate-400" : "text-slate-700"
-                  } hover:cursor-pointer`}
-                  onClick={() => handleActiveState(index,obj)}
+                  } hover:cursor-pointer bg-white hover:bg-white ${userData?.role === 'worker' && obj.link === '/job' ? "invisible" : ""}`.trim()}
+                  onClick={() => handleActiveState(index, obj)}
+                  href={obj.link}
                 >
                   {obj.name}
-                  
-                </li>
+                </Link>
               ))}
-            </ul>
-
-            {localStorage.getItem("account") && (
-              <DropDownMenu
-                navbar={true}
-                navbarLogout={handleNavbarUserLogOut}
-                trigger={<UserRound />}
-                className="m-auto"
-              />
-            )}
-
-            <AlertDialog
-              open={alertOpen}
-              onOpenChange={(open) => console.log("hi")}
-            >
+            </div>
+            {isLoading2?(
+              <div className="flex items-center  py-5 px-7 ">
+              <Loader2 className="animate-spin" />
+            </div>
+            ):
+            userData?.walletAddress ? (
+          <DropDownMenu
+            navbar={true}
+            navbarLogout={handleNavbarUserLogOut}
+            trigger={<UserRound />}
+            className="m-auto py-5 px-7"
+          />
+        ):(
+            <AlertDialog open={alertOpen}>
               <AlertDialogTrigger asChild>
-                {localStorage.getItem("account") == null && (
+                {!userData?.walletAddress && (
                   <div id="button" className="flex items-center py-5 px-5">
                     <Button
                       className="rounded-xl"
@@ -197,7 +214,7 @@ function Navbar() {
                     />
                     Connect to JobPortal
                   </AlertDialogTitle>
-                  <AlertDialogDescription className=" py-5">
+                  {/* <AlertDialogDescription className=" py-5">
                     <button
                       className={`flex justify-start items-center gap-x-5  shadow-md rounded-lg w-[75%] m-auto  bg-gray-100 hover:bg-gray-200`}
                       disabled={isConnecting}
@@ -212,9 +229,9 @@ function Navbar() {
                         alt="metamask fox image"
                         className="ml-2"
                       />
-                      <p className="py-3 text-[16px] font-semibold text-black">
+                      <span className="py-3 text-[16px] font-semibold text-black">
                         MetaMask
-                      </p>
+                      </span>
                       {isConnecting ? (
                         <Loader2 className=" animate-spin absolute left-96" />
                       ) : (
@@ -235,9 +252,9 @@ function Navbar() {
                       }}
                     >
                       <LogIn className="ml-2 text-black" />
-                      <p className="py-3 text-[16px] font-semibold text-black">
+                      <span className="py-3 text-[16px] font-semibold text-black">
                         Sign up
-                      </p>
+                      </span>
                     </button>
                     <button
                       className={`flex justify-start items-center gap-x-5  shadow-md rounded-b-lg w-[75%] m-auto  bg-gray-100 hover:bg-gray-200  mt-[1px]`}
@@ -248,21 +265,85 @@ function Navbar() {
                       }}
                     >
                       <Shield className="ml-2 text-black" />
-                      <p className="py-3 text-[16px] font-semibold text-black">
+                      <span className="py-3 text-[16px] font-semibold text-black">
                         Admin login
-                      </p>
+                      </span>
                     </button>
-                  </AlertDialogDescription>
+                  </AlertDialogDescription> */}
+                  <AlertDialogTitle className="py-5">
+                    <div className="flex flex-col items-center">
+                      <button
+                        className={`flex justify-start items-center gap-x-5 shadow-md rounded-lg w-[75%] m-auto bg-gray-100 hover:bg-gray-200`}
+                        disabled={isConnecting}
+                        onClick={async () => {
+                          if (await handleConnectWallet()) setAlertOpen(false);
+                        }}
+                      >
+                        <Image
+                          src={"/meta-fox.svg"}
+                          width={33}
+                          height={33}
+                          alt="metamask fox image"
+                          className="ml-2"
+                        />
+                        <span className="py-3 text-[16px] font-semibold text-black">
+                          MetaMask
+                        </span>
+                        {isConnecting ? (
+                          <Loader2 className="animate-spin absolute left-96" />
+                        ) : (
+                          ""
+                        )}
+                      </button>
+
+                      <div className="flex w-full justify-center items-center mt-10">
+                        <Separator className="mt-5 bg-gray-300 w-1/2 m-auto" />
+                        <span>OR</span>
+                        <Separator className="mt-5 bg-gray-300 w-1/2 m-auto" />
+                      </div>
+
+                      <button
+                        className={`flex justify-start items-center gap-x-5 shadow-md rounded-t-lg w-[75%] m-auto bg-gray-100 hover:bg-gray-200 mt-7`}
+                        disabled={isConnecting}
+                        onClick={() => {
+                          router.replace("sign-up");
+                          setAlertOpen(false);
+                        }}
+                      >
+                        <LogIn className="ml-2 text-black" />
+                        <span className="py-3 text-[16px] font-semibold text-black">
+                          Sign up
+                        </span>
+                      </button>
+
+                      <button
+                        className={`flex justify-start items-center gap-x-5 shadow-md rounded-b-lg w-[75%] m-auto bg-gray-100 hover:bg-gray-200 mt-[1px]`}
+                        disabled={isConnecting}
+                        onClick={() => {
+                          router.replace("admin-login");
+                          setAlertOpen(false);
+                        }}
+                      >
+                        <Shield className="ml-2 text-black" />
+                        <span className="py-3 text-[16px] font-semibold text-black">
+                          Admin login
+                        </span>
+                      </button>
+                    </div>
+                  </AlertDialogTitle>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   {/* <AlertDialogAction>Continue</AlertDialogAction> */}
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-          </>
         )}
+          </>
+                      
+        )}
+        
       </div>
-    </nav>
+    </div>
   );
 }
 
