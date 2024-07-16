@@ -28,6 +28,7 @@ import { toast } from "@/components/ui/use-toast";
 import { Separator } from "@/components/ui/separator";
 import Footer from "@/components/Footer";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 interface JobType {
   provider: string;
   jobId: number;
@@ -45,7 +46,7 @@ interface Data {
   job: JobType[];
 }
 export default function Home() {
-  const { accounts } = useAppContext();
+  const { accounts,setTitleFilter } = useAppContext();
   const refButton = useRef<HTMLButtonElement>(null);
   const [allJobs, setAllJobs] = useState<JobType[]>([]);
   const [activeJob, setActiveJob] = useState<number>(0);
@@ -54,7 +55,7 @@ export default function Home() {
   const [startIndex, setStartIndex] = useState<number>(4);
   const [reachedEnd, setReachedEnd] = useState<boolean>(false);
   const [filter, setFilter] = useState<string | null>(null);
-
+  const router = useRouter();
   useEffect(() => {
     const handleFetchAllJob = async () => {
       try {
@@ -143,7 +144,8 @@ export default function Home() {
     },
   });
   const onSubmitSearch = (data: z.infer<typeof searchSchema>) => {
-    alert("in search");
+    setTitleFilter(data.query)
+    router.push(`/jobs-and-opportunity`)
     console.log("query button ");
   };
   const handleShowJobDetails = (index = 0) => {

@@ -29,7 +29,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { searchSchema } from "@/schemas/searchSchema";
+import { searchSchema2 } from "@/schemas/searchSchema";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/components/ui/use-toast";
@@ -56,18 +56,20 @@ function JobsAndOpportunity() {
     useState<boolean>(false);
   const [reachedEnd, setReachedEnd] = useState<boolean>(false);
   const [filterLocation, setFilterLocation] = useState<string | null>(null);
-  const [filterTitle, setFilterTitle] = useState<string | null>(null);
+  // const [titleFilter, setTitleFilter] = useState<string | null>(null);
   const [allJobs, setAllJobs] = useState<JobType[]>([]);
   const [showJobDetails, setShowJobDetails] = useState<JobType>();
   const [activeJob, setActiveJob] = useState<number>(0);
-  const { stateValue, setStateValue } = useAppContext();
-  const form = useForm<z.infer<typeof searchSchema>>({
-    resolver: zodResolver(searchSchema),
+  const { stateValue,titleFilter, setStateValue,setTitleFilter } = useAppContext();
+  const {setValue}=useForm();
+  const form = useForm<z.infer<typeof searchSchema2>>({
+    resolver: zodResolver(searchSchema2),
     defaultValues: {
-      query: "",
+      query:titleFilter,
     },
   });
   useEffect(() => {
+    // setValue('query','hi');
     const handleFetchAllJob = async () => {
       try {
         const sIndex = 0;
@@ -83,7 +85,7 @@ function JobsAndOpportunity() {
             sIndex,
             eIndex,
             location: stateValue,
-            title: filterTitle,
+            title: titleFilter,
           }),
         });
         const data: Data = await response.json();
@@ -103,7 +105,7 @@ function JobsAndOpportunity() {
       }
     };
     handleFetchAllJob();
-  }, [filterLocation, filterTitle, stateValue]);
+  }, [filterLocation, titleFilter, stateValue]);
   const handleShowJobDetails = (index = 0) => {
     if (activeJob == index) {
       return;
@@ -120,8 +122,8 @@ function JobsAndOpportunity() {
       setIsFetchingJobDetails(false);
     }, 500);
   };
-  const onSubmitSearch = (data: z.infer<typeof searchSchema>) => {
-    setFilterTitle(data.query);
+  const onSubmitSearch = (data: z.infer<typeof searchSchema2>) => {
+    setTitleFilter(data.query);
   };
   return (
     <main className="min-h-screen overflow-hidden bg-[#f6f6f6]">
