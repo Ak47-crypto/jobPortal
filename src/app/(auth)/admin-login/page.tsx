@@ -114,17 +114,9 @@ rounded-md shadow-xl m-2 mb-20"
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex justify-between">
+                  
                     <FormLabel className="mt-1">Password</FormLabel>
-                    <p className="inline ">
-                      <Link
-                        href="/password-reset"
-                        className="text-blue-600 hover:text-blue-800 text-sm"
-                      >
-                        Forgot Password?
-                      </Link>
-                    </p>
-                  </div>
+                    
                   <FormControl>
                     <Input
                       placeholder="Enter your password"
