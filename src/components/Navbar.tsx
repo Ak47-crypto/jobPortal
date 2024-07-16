@@ -123,7 +123,8 @@ function Navbar() {
   const handleNavbarUserLogOut = async () => {
     // localStorage.removeItem("account");
     // localStorage.removeItem("user-profile");
-    setUserData(null)
+    try {
+      setUserData(null)
     Cookies.remove("userData");
     
     const provider = new ethers.BrowserProvider(window.ethereum);
@@ -133,6 +134,11 @@ function Navbar() {
       },
     ]);
     window.location.reload();
+    } catch (error) {
+      console.log(error);
+      
+    }
+    
   };
   if (pathname.startsWith("/dashboard")) return <></>
   return (

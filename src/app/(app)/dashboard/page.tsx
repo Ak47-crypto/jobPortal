@@ -250,7 +250,8 @@ function Dashboard() {
   };
 
   const handleAdminLogOut = async () => {
-    localStorage.removeItem("account");
+    try {
+      localStorage.removeItem("account");
     const provider = new ethers.BrowserProvider(window.ethereum);
     await provider.send("wallet_revokePermissions", [
       {
@@ -259,6 +260,12 @@ function Dashboard() {
     ]);
     signOut();
     // window.location.reload();
+    } catch (error) {
+      console.log(error);
+      localStorage.removeItem("account");
+      signOut();
+    }
+    
   };
   if (!session || !session.user) {
     return <div></div>;
