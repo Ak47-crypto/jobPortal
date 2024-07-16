@@ -1,8 +1,10 @@
+"use client"
 import React from "react";
 import Cookies from "js-cookie";
 import { ethers } from "ethers";
 import { UserType } from "@/types/userType";
 import { UserRound, User, LogOut, BriefcaseBusiness } from "lucide-react";
+import { useAppContext } from "@/context/SiteContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,8 +41,9 @@ function DropDownMenu({
   //     ])
   //     window.location.reload()
   // }
-const cookieData=Cookies.get("userData")
-const userData:UserType=JSON.parse(cookieData as string) 
+  const {userData}=useAppContext();
+
+
   return (
     <>
       <div {...rest}>
@@ -61,7 +64,7 @@ const userData:UserType=JSON.parse(cookieData as string)
                   <span>Profile</span>
                 </DropdownMenuItem>
               </Link>
-              {(userData.role==='provider')&&
+              {(userData?.role==='provider')&&
                <Link href={`/job/job-list`}>
                <DropdownMenuItem className="w-full">
                  <BriefcaseBusiness className="mr-2 h-4 w-4" />
