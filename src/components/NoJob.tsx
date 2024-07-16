@@ -16,7 +16,7 @@ function NoJob() {
             />
             
             <span className='font-bold text-center '>No luck? No problem!</span>
-            <span className=''>Didn't find the results you are looking for in Job opportunities? Explore all opportunities, happy exploring!</span>
+            <span className=''>Didn&apos;t find the results you are looking for in Job opportunities? Explore all opportunities, happy exploring!</span>
             <div className='w-full flex justify-center '>
             <Button className='bg-white text-blue-400 border hover:bg-white' onClick={()=>setStateValue('')}>Explore all</Button>
             </div>

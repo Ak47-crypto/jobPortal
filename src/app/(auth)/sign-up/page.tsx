@@ -140,7 +140,7 @@ function SignUp() {
         >
           <h1 className="font-normal text-xl px-10 pt-5">Worker Profile</h1>
           <p className="px-10 py-2 text-sm text-gray-400">
-            Fill out the details. Click sign up when you're done.
+            Fill out the details. Click sign up when you&apos;re done.
           </p>
           <Form {...form}>
             <form
@@ -274,7 +274,7 @@ function SignUp() {
         >
           <h1 className="font-normal text-xl px-10 pt-5">Provider Profile</h1>
           <p className="px-10 py-2 text-sm text-gray-400">
-            Fill out the details. Click sign up when you're done.
+            Fill out the details. Click sign up when you&apos;re done.
           </p>
           <Form {...form2}>
             <form
