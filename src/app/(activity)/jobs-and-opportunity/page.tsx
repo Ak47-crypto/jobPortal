@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import StateDropdown from "@/components/District";
 import { useAppContext } from "@/context/SiteContext";
+import { useRouter } from "next/navigation";
 import {
   Form,
   FormControl,
@@ -34,6 +35,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/components/ui/use-toast";
 import NoJob from "@/components/NoJob";
+import Link from "next/link";
 interface JobType {
   provider: string;
   jobId: number;
@@ -60,6 +62,7 @@ function JobsAndOpportunity() {
   const [allJobs, setAllJobs] = useState<JobType[]>([]);
   const [showJobDetails, setShowJobDetails] = useState<JobType>();
   const [activeJob, setActiveJob] = useState<number>(0);
+  const router = useRouter();
   const { stateValue,titleFilter, setStateValue,setTitleFilter } = useAppContext();
   const {setValue}=useForm();
   const form = useForm<z.infer<typeof searchSchema2>>({
@@ -302,12 +305,18 @@ function JobsAndOpportunity() {
                     {/* <MapPin className="w-6 h-6 mt-1" />
                       <p>{showJobDetails?.location}</p> */}
                     {/* <AppWindow/> */}
+                    <Link
+                    href={`/jobs-and-opportunity/${showJobDetails.provider}-${showJobDetails.jobId}`}
+                    target="_blank"
+                    >
                     <Button
                       size={"lg"}
                       className="w-[200px] h-[48px] py-4 p-4 rounded-xl bg-[#0073e6] hover:bg-blue-700"
+                      // onClick={()=>router.push(`/jobs-and-opportunity/${showJobDetails.provider}-${showJobDetails.jobId}`)}
                     >
                       Apply
                     </Button>
+                    </Link>
                   </div>
                   <div className=" relative bg-white w-full py-5 rounded-xl">
                     <div className="absolute w-[4px] h-[32.5px] bg-[#0073e6] rounded-r-full"></div>
