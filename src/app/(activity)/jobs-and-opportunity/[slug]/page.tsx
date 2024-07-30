@@ -6,6 +6,8 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
+import { toast } from "@/components/ui/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 interface JobType {
   provider: string;
   jobId: number;
@@ -19,10 +21,12 @@ interface JobType {
 }
 function Slug({ params }: { params: { slug: string } }) {
   const [showJobDetails, setShowJobDetails] = useState<JobType>();
+  const [isFetchingJobDetails,setIsFetchingJobDetails]=useState<boolean>(true)
   console.log(params);
   useEffect(() => {
     const handleFetchJob = async () => {
-      const lastDashIndex = params.slug.lastIndexOf("-");
+        try {
+            const lastDashIndex = params.slug.lastIndexOf("-");
 
       if (lastDashIndex === -1) {
         throw new Error(
@@ -47,13 +51,55 @@ function Slug({ params }: { params: { slug: string } }) {
       if(data.success==true){
         setShowJobDetails(data.data)
       }
+        } catch (error) {
+            console.log(error)
+            toast({
+                title:"Message",
+                description:"Error occured",
+                variant:"destructive"
+            })
+        }finally{
+            setIsFetchingJobDetails(false)
+        }
+      
     };
     handleFetchJob()
   }, []);
   return (
     <main className="bg-[#f6f6f6]">
       <div className="flex justify-center mx-20">
-        <section id="left">
+        {isFetchingJobDetails?(
+            <>
+            <div className="bg-white  flex flex-col gap-y-4 p-4 rounded-xl w-full mr-4 ml-4 mt-4 ">
+              <div className="flex flex-col items-centerx gap-y-4 p-4">
+                <Skeleton className="h-4 w-[250px]" />
+                <Skeleton className="h-4 w-[200px]" />
+                <div className="flex gap-x-2 text-[24px] font-light items-center">
+                  <Skeleton className="h-6 w-6 rounded-full" />
+                  <Skeleton className="h-4 w-[100px]" />
+                </div>
+                <Skeleton className="h-4 w-[100px]" />
+                <Skeleton className="h-14 w-[200px] rounded-md" />
+                <Skeleton className="h-4 w-[100px]" />
+                <Skeleton className="h-4 w-[300px]" />
+                <Skeleton className="h-4 w-[280px]" />
+                <Skeleton className="h-4 w-[250px]" />
+                <Skeleton className="h-4 w-[270px]" />
+                <Skeleton className="h-4 w-[300px]" />
+                <Skeleton className="h-4 w-[100px]" />
+                <Skeleton className="h-4 w-[300px]" />
+                <Skeleton className="h-4 w-[280px]" />
+                <Skeleton className="h-4 w-[250px]" />
+                <Skeleton className="h-4 w-[270px]" />
+                <Skeleton className="h-4 w-[300px]" />
+                <Skeleton className="h-4 w-[270px]" />
+                <Skeleton className="h-4 w-[300px]" />
+              </div>
+            </div>
+          </>
+        ):(
+            // !showJobDetails?'':
+        <section id="left" className="w-full">
           <div className="  flex flex-col gap-y-4 p-4 w-full min-h-[727px]">
             <div className="bg-white rounded-xl p-4">
               <div className=" flex ">
@@ -141,6 +187,7 @@ function Slug({ params }: { params: { slug: string } }) {
           </div>
           
         </section>
+        )}
         <section id="right" className="mt-4">
         <div className="flex gap-x-2 text-[24px] font-light items-center justify-center bg-white w-full py-10 p-5 rounded-xl mb-4">
               
@@ -151,6 +198,15 @@ function Slug({ params }: { params: { slug: string } }) {
                 Apply
               </Button>
             </div>
+            {isFetchingJobDetails?(
+                <div className="  bg-white w-full py-5 rounded-xl">
+                                <Skeleton className="h-4 w-[100px] ml-4" />
+                                <Skeleton className="h-4  mx-4  mt-8" />
+                                {/* <Skeleton className="h-4 w-[100px] ml-4 mt-1 bg-white" /> */}
+
+
+              </div>
+            ):(
             <div className=" relative bg-white w-full py-5 rounded-xl">
               <div className="absolute w-[4px] h-[32.5px] bg-[#0073e6] rounded-r-full"></div>
               <p className="text-xl font-medium text-[#383838]  ml-4">
@@ -158,6 +214,7 @@ function Slug({ params }: { params: { slug: string } }) {
               </p>
               <p className="ml-4 mt-4">Skilled or Unskilled</p>
             </div>
+            )}
         </section>
       </div>
     </main>

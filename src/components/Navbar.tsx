@@ -312,7 +312,7 @@ function Navbar() {
                         className={`flex justify-start items-center gap-x-5 shadow-md rounded-t-lg w-[75%] m-auto bg-gray-100 hover:bg-gray-200 mt-7`}
                         disabled={isConnecting}
                         onClick={() => {
-                          router.replace("sign-up");
+                          router.push("/sign-up");
                           setAlertOpen(false);
                         }}
                       >
@@ -326,7 +326,7 @@ function Navbar() {
                         className={`flex justify-start items-center gap-x-5 shadow-md rounded-b-lg w-[75%] m-auto bg-gray-100 hover:bg-gray-200 mt-[1px]`}
                         disabled={isConnecting}
                         onClick={() => {
-                          router.replace("admin-login");
+                          router.push("/admin-login");
                           setAlertOpen(false);
                         }}
                       >
