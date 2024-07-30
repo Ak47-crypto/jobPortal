@@ -20,3 +20,15 @@ export interface UserType {
     area: number;
     density: number;
 }
+
+export interface JobType {
+  provider: string;
+  jobId: number;
+  title: string;
+  location: string;
+  salary: string;
+  description: string;
+  isActive: boolean;
+  timestamp: string;
+  _id: string;
+}
