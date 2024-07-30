@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Cookies from "js-cookie";
 import { JobType } from "@/types/userType";
 import useApplyJob from "@/hooks/worker/useApplyJob";
+import NoJob from "@/components/NoJob";
 
 function Slug({ params }: { params: { slug: string } }) {
   const {applyJob,isTransacting}=useApplyJob();
@@ -132,6 +133,10 @@ function Slug({ params }: { params: { slug: string } }) {
           </>
         ) : (
           // !showJobDetails?'':
+          !showJobDetails?(
+          <div className=" w-full bg-white flex justify-center   items-center h-full my-10 py-5">
+              <NoJob />
+            </div>):
           <section id="left" className="w-full">
             <div className="  flex flex-col gap-y-4 p-4 w-full min-h-[727px]">
               <div className="bg-white rounded-xl p-4">
@@ -223,7 +228,7 @@ function Slug({ params }: { params: { slug: string } }) {
             </div>
           </section>
         )}
-        <section id="right" className="mt-4">
+        <section id="right" className={`mt-4 ${!showJobDetails?"hidden":""}`}>
           <div className={`flex gap-x-2 text-[24px] font-light items-center justify-center bg-white w-full py-10 p-5 rounded-xl mb-4 `}>
             <Button
               size={"lg"}

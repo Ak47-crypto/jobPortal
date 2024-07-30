@@ -57,7 +57,7 @@ function Navbar() {
     },
     {
       name: "Applications",
-      link: "/",
+      link: "/application",
     },
     {
       name: "Post a job",
