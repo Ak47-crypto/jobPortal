@@ -179,7 +179,7 @@ function Navbar() {
               {navLinks.map((obj, index) => (
                 <Link
                   key={index + obj.link + obj.name}
-                  className={`bg-inherit hover:bg-inherit ${
+                  className={`!bg-inherit hover:bg-inherit ${
                     isActive === index ? "text-slate-400" : "text-slate-700"
                   } hover:cursor-pointer bg-white hover:bg-white ${
                     userData?.role === "worker" && obj.link === "/job"
