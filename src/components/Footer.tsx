@@ -4,9 +4,10 @@ import { Input } from './ui/input'
 import { Button } from './ui/button'
 import { Separator } from './ui/separator'
 import { usePathname } from 'next/navigation'
+import Link from 'next/link'
 function Footer() {
 const path=usePathname()
-if(path.startsWith("/dashboard")||path.startsWith("/sign-up")||path.startsWith("/admin-login"))
+if(path.startsWith("/dashboard")||path.startsWith("/sign-up")||path.startsWith("/admin-login")||path.startsWith("/about")||path.startsWith("/contact"))
   return null;
   return (
     <footer className=''>
@@ -32,8 +33,12 @@ if(path.startsWith("/dashboard")||path.startsWith("/sign-up")||path.startsWith("
                   <div className='w-[505px] '>
                     <div className='flex justify-between items-center'>
                       <ul className='text-black leading-10'>
+                        <Link href={"/about"}>
                         <li>About</li>
+                        </Link>
+                        <Link href={"/contact"}>
                         <li>Contact</li>
+                        </Link>
                         <li>Blog</li>
                         <li>Story</li>
                       </ul>

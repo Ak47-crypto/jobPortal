@@ -5,7 +5,7 @@ import { getToken } from "next-auth/jwt";
 // import type { JWT } from 'next-auth/jwt';
 // This function can be marked `async` if using `await` inside
 export const config = {
-  matcher: ["/admin-login", "/dashboard/:path*", "/sign-up", "/user/:path*","/job/:path*"],
+  matcher: ["/admin-login", "/dashboard/:path*", "/sign-up", "/user/:path*","/job/:path*","/application"],
 };
 export async function middleware(request: NextRequest) {
   //   return NextResponse.redirect(new URL('/', request.url))
@@ -28,7 +28,7 @@ export async function middleware(request: NextRequest) {
   }
   if (
     !userData &&
-    (url.pathname.startsWith("/user/profile")||url.pathname.startsWith("/job")||url.pathname.startsWith("/job/job-list"))
+    (url.pathname.startsWith("/user/profile")||url.pathname.startsWith("/job")||url.pathname.startsWith("/job/job-list")||url.pathname.startsWith("/application"))
   ) {
     return NextResponse.redirect(new URL("/", request.url));
   }
@@ -39,6 +39,14 @@ export async function middleware(request: NextRequest) {
   ) {
     const data=JSON.parse(userData.value)
     if(data.role!='provider')
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+  if (
+    userData &&
+    (url.pathname.startsWith("/application"))
+  ) {
+    const data=JSON.parse(userData.value)
+    if(data.role!='worker')
     return NextResponse.redirect(new URL("/", request.url));
   }
   console.log(token, "not in if");

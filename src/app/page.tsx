@@ -215,7 +215,7 @@ export default function Home() {
               />
               <Button
                 type="submit"
-                className="text-white bg-[#2062E2] rounded-xl hover:bg-blue-500"
+                className="text-white bg-[#0073e6] rounded-xl hover:bg-blue-500"
               >
                 Search
               </Button>
@@ -283,7 +283,7 @@ export default function Home() {
                   refButton.current.click();
                 }
               }}
-              className="bg-[#18408E] hover:bg-[#2062E2]"
+              className="bg-[#0073e6] hover:bg-[#2062E2]"
             >
               Apply
             </Button>
@@ -352,7 +352,7 @@ export default function Home() {
                 size={"lg"}
                 onClick={handleClick}
                 disabled={reachedEnd}
-                className={`mt-auto bg-[#18408E] w-40 hover:bg-[#2062E2]  ${
+                className={`mt-auto bg-[#0073e6] w-40 hover:bg-[#2062E2]  ${
                   reachedEnd ? "bg-black" : "bg-[#18408E]"
                 } transition ease-out`}
               >
@@ -414,10 +414,19 @@ export default function Home() {
                       <IndianRupee />
                       {showJobDetails?.salary} a day
                     </div>
-
-                    <Button className="bg-[#18408E] w-40 hover:bg-[#2062E2]">
-                      Apply now
+                    
+                    <Link
+                    href={`/jobs-and-opportunity/${showJobDetails.provider}-${showJobDetails.jobId}`}
+                    target="_blank"
+                    >
+                    <Button
+                      size={"lg"}
+                      className="w-[200px] h-[48px] py-4 p-4 rounded-xl bg-[#0073e6] hover:bg-blue-700"
+                      // onClick={()=>router.push(`/jobs-and-opportunity/${showJobDetails.provider}-${showJobDetails.jobId}`)}
+                    >
+                      Apply
                     </Button>
+                    </Link>
                     <p className="text-[20px] font-semibold">Job description</p>
                     <p className="text-[20px]">{showJobDetails?.description}</p>
                   </div>
