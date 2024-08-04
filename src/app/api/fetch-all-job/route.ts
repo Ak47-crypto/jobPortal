@@ -47,7 +47,7 @@ export async function POST(request: Request) {
       }
     ]);
 
-    const jobs = await providerModel.aggregate(pipeline);
+    const jobs = await providerModel.aggregate(pipeline).exec();
 
     // The result will be an array with a single object containing the allJobs array
     const allJobs = jobs[0]?.allJobs || [];
