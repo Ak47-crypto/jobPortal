@@ -6,9 +6,10 @@ import Image from "next/image";
 import { ethers } from "ethers";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, MapPin, IndianRupee, Pizza, Terminal } from "lucide-react";
+import { Search, MapPin, IndianRupee, Pizza, Terminal, Loader2 } from "lucide-react";
 import { searchSchema } from "@/schemas/searchSchema";
 import { jobFilterSchema } from "@/schemas/jobFilterSchema";
+import { newsLetterSchema } from "@/schemas/newsLetterSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -55,6 +56,7 @@ export default function Home() {
   const [startIndex, setStartIndex] = useState<number>(4);
   const [reachedEnd, setReachedEnd] = useState<boolean>(false);
   const [filter, setFilter] = useState<string | null>(null);
+  const [isSendingEmail,setIsSendingEmail]=useState<boolean>(false);
   const router = useRouter();
   useEffect(() => {
     const handleFetchAllJob = async () => {
@@ -143,6 +145,31 @@ export default function Home() {
       filter: "",
     },
   });
+  const form3 = useForm<z.infer<typeof newsLetterSchema>>({
+    resolver: zodResolver(newsLetterSchema),
+    defaultValues: {
+      email: "",
+    },
+  });
+  const handleNewsLetterEmail=async (data: z.infer<typeof newsLetterSchema>)=>{
+    try {
+      setIsSendingEmail(true)
+      const response = await fetch("/api/send-email",{
+        method:"POST",
+        headers:{
+          "CONTENT-TYPE":"application/json"
+        },
+        body:JSON.stringify({...data})
+      })
+      const data2 = await response.json();
+      console.log(data2)
+    } catch (error) {
+      console.log(error)
+    }finally{
+      setIsSendingEmail(false)
+    }
+
+  }
   const onSubmitSearch = (data: z.infer<typeof searchSchema>) => {
     setTitleFilter(data.query)
     router.push(`/jobs-and-opportunity`)
@@ -488,14 +515,14 @@ export default function Home() {
             </p>
           </div>
           <div className="mt-auto">
-            <Form {...form}>
+            <Form {...form3}>
               <form
-                onSubmit={form.handleSubmit(onSubmitSearch)}
+                onSubmit={form3.handleSubmit(handleNewsLetterEmail)}
                 className="flex justify-center items-center h-full gap-x-12"
               >
                 <FormField
-                  control={form.control}
-                  name="query"
+                  control={form3.control}
+                  name="email"
                   render={({ field }) => (
                     <FormItem>
                       <div className=" relative border border-black rounded-[40px] w-[613px] h-[88px] py-[11px] pl-[16px] pr-[40px] bg-white">
@@ -505,8 +532,10 @@ export default function Home() {
                             type="submit"
                             className="rounded-3xl text-white text-xl bg-[#2062E2]"
                             size={"lg"}
+                            disabled={isSendingEmail}
                           >
-                            Subscribe
+                            {isSendingEmail?(<><Loader2/> Subscribing</>):
+                            "Subscribe"}
                           </Button>
                         </div>
                         <FormControl>
