@@ -9,6 +9,7 @@ import Navbar from "@/components/Navbar";
 import AuthProvider from "@/context/AuthProvider";
 import Footer from "@/components/Footer";
 import MobileUserAlert from "@/components/MobileUserAlert";
+import NextTopLoader from 'nextjs-toploader';
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -28,6 +29,7 @@ export default function RootLayout({
           <MobileUserAlert/>
         <AuthProvider>
         <MyProvider>
+        <NextTopLoader showSpinner={false}/>
           <Navbar/>
         {children}
         <Footer/>

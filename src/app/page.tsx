@@ -162,6 +162,18 @@ export default function Home() {
         body:JSON.stringify({...data})
       })
       const data2 = await response.json();
+      if(data2.success==true){
+        toast({
+          title:"Message",
+          description:"Subscribed to newsletter"
+        })
+      }else {
+        toast({
+          title:"Message",
+          description:`${data2.message}`,
+          variant:"destructive"
+        })
+      }
       console.log(data2)
     } catch (error) {
       console.log(error)
@@ -534,7 +546,7 @@ export default function Home() {
                             size={"lg"}
                             disabled={isSendingEmail}
                           >
-                            {isSendingEmail?(<><Loader2/> Subscribing</>):
+                            {isSendingEmail?(<><Loader2 className=" animate-spin"/>Subscribing</>):
                             "Subscribe"}
                           </Button>
                         </div>
@@ -542,7 +554,7 @@ export default function Home() {
                           <Input
                             type="text"
                             placeholder="Enter your email"
-                            className="  w-[413px] h-full focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 border-none rounded-2xl placeholder:text-xl text-xl"
+                            className="  w-[413px] h-full focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 border-none rounded-2xl placeholder:text-xl text-xl pr-10"
                             {...field}
                           />
                         </FormControl>
