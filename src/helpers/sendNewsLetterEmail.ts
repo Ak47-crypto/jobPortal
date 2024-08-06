@@ -12,7 +12,7 @@ export async function sendNewsLetterEmail(
          const res=await resend.emails.send({
             from: 'newsletter.jobportal@askonline.fun',
             to: email,
-            subject: 'Your askonline verification code',
+            subject: 'Job portal newsletter',
             react: NewsLetterEmail({email})
           });
           if(res.data)
