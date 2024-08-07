@@ -6,7 +6,10 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function sendNewsLetterEmail(
     email:string,
-){
+):Promise<{
+    success:boolean,
+    message:string
+}>{
     try {
         // console.log(email,username,verifyCode)
          const res=await resend.emails.send({
